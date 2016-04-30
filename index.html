@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Title Page</title>
+    <title>ITSC Services Map</title>
 
     <!-- bower:css -->
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
@@ -22,22 +22,32 @@
   <body ng-controller="MainController">
     <div class="container-fluid">
       <ui-gmap-google-map center='map.center' zoom='map.zoom' options="options" id="itsc-map">
-        <ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id">
-            <ui-gmap-window options="windowOptions" closeClick="closeClick()">
-                <div>
-                  <h3>{{title}}</h3>
-                  <img ng-src="{{image_url}}" height=400 />
-                </div>
-            </ui-gmap-window>
-        </ui-gmap-marker>
+        <!--<ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id">-->
+            <!--<ui-gmap-window options="windowOptions" closeClick="closeClick()" templateUrl="'templates/windowContent.html'" templateParameter="windowParams">-->
+            <!--</ui-gmap-window>-->
+        <!--</ui-gmap-marker>-->
+        <ui-gmap-markers models="markersArray" coords="'self'" options="'options'" click="onClick">
+          <ui-gmap-windows>
+            <div>
+              <h5>{{title}}</h5>
+              <img ng-src="{{image_url}}" class="img-responsive"  style="max-width: 100%; max-height:350px"/>
+            </div>
+          </ui-gmap-windows>
+        </ui-gmap-markers>
       </ui-gmap-google-map>
 
       <div ng-cloak>
-        <ul>
-          <li>coords update ctr: {{coordsUpdates}}</li>
-          <li>dynamic move ctr: {{dynamicMoveCtr}}</li>
-        </ul>
+        <button ng-click="toggleMarkerVisible(0)" class="btn btn-primary">Virtual Barn</button>
+        <button ng-click="toggleMarkerVisible(1)" class="btn btn-success">Printers</button>
       </div>
+      <hr>
+      <div>
+        <p>For Debug only: (will not be shown to public)</p>
+        <pre>{{markersArray | json:4}}</pre>
+      </div>
+
+      <div class="badge pull-right">V1.0</div>
+      <div class="label label-primary pull-left">Last Updated: 30 APRIL 2016</div>
     </div>
 
 
