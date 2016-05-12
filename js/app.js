@@ -1,4 +1,4 @@
-var app = angular.module('app',['uiGmapgoogle-maps', 'frapontillo.bootstrap-switch']);
+var app = angular.module('app',['uiGmapgoogle-maps', 'frapontillo.bootstrap-switch', 'angular-json-editor']);
 
 app.controller('MainController', ['$scope', '$log', '$http', function($scope, $log, $http) {
 
@@ -92,6 +92,9 @@ app.controller('MainController', ['$scope', '$log', '$http', function($scope, $l
       }
     }
   }
+}]);
+
+app.controller('AdminController', ['$scope', '$log', '$http', function($scope, $log, $http) {
 
   $scope.updateJson = function(json) {
     $http.post("/path/to/api/", json).success(function(data){
@@ -101,7 +104,30 @@ app.controller('MainController', ['$scope', '$log', '$http', function($scope, $l
     });
   }
 
+  $scope.mySchema = {
+    type: 'object',
+    properties: {
+      name: {
+        type: 'string',
+        title: 'Item Name',
+        required: true,
+        minLength: 1
+      },
+      age: {
+        type: 'integer',
+        title: 'Age',
+        required: true,
+        min: 0
+      }
+    }
+  };
 
+  $scope.myStartVal = {
+    age: 20
+  };
 
-
+  $scope.onChange = function (data) {
+    console.log('Form changed!');
+    console.dir(data);
+  };
 }]);

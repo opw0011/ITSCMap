@@ -21,8 +21,13 @@
     <link rel="stylesheet" href="css/main.css" />
   </head>
   <body ng-controller="MainController">
-    <div class="container-fluid">
+    <div class="container-fluid" ng-controller="AdminController">
       <div class="container-fluid">
+        <!-- JSON Editor-->
+        <json-editor schema="mySchema" startval="myStartVal"
+                     on-change="onChange($editorValue)">
+        </json-editor>
+
         <ui-gmap-google-map center='map.center' zoom='map.zoom' options="options" id="itsc-map">
           <!--<ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id">-->
           <!--<ui-gmap-window options="windowOptions" closeClick="closeClick()" templateUrl="'templates/windowContent.html'" templateParameter="windowParams">-->
@@ -38,15 +43,11 @@
           </ui-gmap-markers>
         </ui-gmap-google-map>
 
-        <div ng-cloak>
-          <button ng-click="toggleMarkerVisible(0)" class="btn btn-primary">Virtual Barn</button>
-          <button ng-click="toggleMarkerVisible(1)" class="btn btn-success">Printers</button>
-        </div>
         <hr>
-        <div>
-          <p>For Debug only: (will not be shown to public)</p>
-          <pre>{{mapJson | json:4}}</pre>
-        </div>
+        <!--<div>-->
+          <!--<p>For Debug only: (will not be shown to public)</p>-->
+          <!--<pre>{{mapJson | json:4}}</pre>-->
+        <!--</div>-->
 
         <div class="badge pull-right">V1.1</div>
         <div class="label label-primary pull-left">Last Updated: 12 MAY 2016</div>
@@ -64,6 +65,8 @@
     <script src="bower_components/angular-google-maps/dist/angular-google-maps.js"></script>
     <script src="bower_components/bootstrap-switch/dist/js/bootstrap-switch.js"></script>
     <script src="bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"></script>
+    <script src="bower_components/json-editor/dist/jsoneditor.js"></script>
+    <script src="bower_components/angular-json-editor/src/angular-json-editor.js"></script>
     <!-- endbower -->
     <script src="js/app.js"></script>
   </body>
