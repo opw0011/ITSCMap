@@ -1,14 +1,23 @@
 var app = angular.module('app',['uiGmapgoogle-maps']);
 
-app.controller('MainController', ['$scope', function($scope, $log) {
+app.controller('MainController', ['$scope', '$log', '$http', function($scope, $log, $http) {
   $scope.greeting = 'Hola!';
   $scope.test = "123";
 
   var image_pc = "http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/computers.png"
   var image_mfp='http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/text.png';
 
+  // get json data
+  $http.get("data/setting.json")
+      .then(function(response) {
+        //$scope.myWelcome = response.data;
+        console.log(response.data);
+        //$scope.markersArray = response.data;
+        $scope.initMap(response.data);
 
-  $scope.init = function() {
+      });
+
+  $scope.initMap = function(inputMarketsArray) {
 
     // set map height
     var mapHeight = 700; // or any other calculated value
@@ -28,23 +37,7 @@ app.controller('MainController', ['$scope', function($scope, $log) {
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
 
-    //// map markers
-    //$scope.marker = {
-    //  id: 0,
-    //  coords: {
-    //    latitude: 22.337916,
-    //    longitude: 114.263373,
-    //  },
-    //  options: {
-    //    draggable: false,
-    //    icon: image_pc,
-    //    visible: true,
-    //    animation: google.maps.Animation.DROP
-    //  }
-    //};
-
-    $scope.markersArray = [];
-
+    // markers options
     $scope.virtualBarnOptions = {
       visible: true,
       animation: google.maps.Animation.DROP,
@@ -57,37 +50,54 @@ app.controller('MainController', ['$scope', function($scope, $log) {
       icon: image_mfp
     }
 
-    // virtual barn markers
-    var marker0 = {
-      id: 0,
-      latitude: 22.337916,
-      longitude: 114.263373,
-      title: "Student Lounge - Virtual Barn Workstations",
-      image_url:  'http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/vb_lounge.jpg',
-      options: $scope.virtualBarnOptions
-    }
 
-    var marker1 = {
-      id: 1,
-      latitude: 22.335534142708,
-      longitude: 114.26342786225314,
-      title: "LTJ - Virtual Barn Workstations",
-      image_url:  'http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/mfp_ltj.jpg',
-      options: $scope.virtualBarnOptions
-    };
-    $scope.markersArray.push(marker0);
-    $scope.markersArray.push(marker1);
+    // process markers array
+    $scope.markersArray = inputMarketsArray;
+    // append options to each markers
+    $scope.markersArray.forEach(function (markerItem) {
+      switch (markerItem.service_type) {
+        case 'virtual_barn':
+          markerItem.options = $scope.virtualBarnOptions;
+          break;
+        case 'mfp':
+          markerItem.options = $scope.MFPOptions;
+          break;
+
+      }
+
+    });
+
+    // virtual barn markers
+    //var marker0 = {
+    //  id: 0,
+    //  latitude: 22.337916,
+    //  longitude: 114.263373,
+    //  title: "Student Lounge - Virtual Barn Workstations",
+    //  image_url:  'http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/vb_lounge.jpg',
+    //  options: $scope.virtualBarnOptions
+    //}
+
+    //var marker1 = {
+    //  id: 1,
+    //  latitude: 22.335534142708,
+    //  longitude: 114.26342786225314,
+    //  title: "LTJ - Virtual Barn Workstations",
+    //  image_url:  'http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/mfp_ltj.jpg',
+    //  options: $scope.virtualBarnOptions
+    //};
+    //$scope.markersArray.push(marker0);
+    //$scope.markersArray.push(marker1);
 
     // Satellite Printers
-    var sMarker0 = {
-      id: 2,
-      latitude: 22.33632060929741,
-      longitude: 114.26344127329821,
-      title: "Coffee Shop - MFP",
-      image_url:  'http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/mfp_coffeeshop.jpg',
-      options: $scope.MFPOptions
-    }
-    $scope.markersArray.push(sMarker0);
+    //var sMarker0 = {
+    //  id: 2,
+    //  latitude: 22.33632060929741,
+    //  longitude: 114.26344127329821,
+    //  title: "Coffee Shop - MFP",
+    //  image_url:  'http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/mfp_coffeeshop.jpg',
+    //  options: $scope.MFPOptions
+    //}
+    //$scope.markersArray.push(sMarker0);
 
 
     // map windows
@@ -122,17 +132,6 @@ app.controller('MainController', ['$scope', function($scope, $log) {
           alert("ERROR");
       }
     }
-
-
-    //$scope.title = "Student Lounge - Virtual Barn Workstations";
-    //$scope.image_url =  'http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/vb_lounge.jpg';
-
-
-    //// param in pop up windows
-    //$scope.windowParams = {
-    //  title: $scope.title,
-    //  image_url: $scope.image_url
-    //}
   }
 
   $scope.updateJson = function(json) {
@@ -143,7 +142,6 @@ app.controller('MainController', ['$scope', function($scope, $log) {
     });
   }
 
-  $scope.init();
 
 
 

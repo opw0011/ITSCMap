@@ -15,7 +15,7 @@ module.exports = function(grunt) {
     // }
     wiredep: {
       target: {
-        src: 'index.html' // point to your HTML file.
+        src: ['index.html','admin.html'] // point to your HTML file.
       }
     }
   });
