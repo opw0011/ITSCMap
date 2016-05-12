@@ -1,8 +1,6 @@
-var app = angular.module('app',['uiGmapgoogle-maps']);
+var app = angular.module('app',['uiGmapgoogle-maps', 'frapontillo.bootstrap-switch']);
 
 app.controller('MainController', ['$scope', '$log', '$http', function($scope, $log, $http) {
-  $scope.greeting = 'Hola!';
-  $scope.test = "123";
 
   var image_pc = "http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/computers.png"
   var image_mfp='http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/text.png';
@@ -10,11 +8,9 @@ app.controller('MainController', ['$scope', '$log', '$http', function($scope, $l
   // get json data
   $http.get("data/setting.json")
       .then(function(response) {
-        //$scope.myWelcome = response.data;
         console.log(response.data);
-        //$scope.markersArray = response.data;
+        $scope.mapJson = angular.copy(response.data); // deep copy
         $scope.initMap(response.data);
-
       });
 
   $scope.initMap = function(inputMarketsArray) {
@@ -62,43 +58,8 @@ app.controller('MainController', ['$scope', '$log', '$http', function($scope, $l
         case 'mfp':
           markerItem.options = $scope.MFPOptions;
           break;
-
       }
-
     });
-
-    // virtual barn markers
-    //var marker0 = {
-    //  id: 0,
-    //  latitude: 22.337916,
-    //  longitude: 114.263373,
-    //  title: "Student Lounge - Virtual Barn Workstations",
-    //  image_url:  'http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/vb_lounge.jpg',
-    //  options: $scope.virtualBarnOptions
-    //}
-
-    //var marker1 = {
-    //  id: 1,
-    //  latitude: 22.335534142708,
-    //  longitude: 114.26342786225314,
-    //  title: "LTJ - Virtual Barn Workstations",
-    //  image_url:  'http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/mfp_ltj.jpg',
-    //  options: $scope.virtualBarnOptions
-    //};
-    //$scope.markersArray.push(marker0);
-    //$scope.markersArray.push(marker1);
-
-    // Satellite Printers
-    //var sMarker0 = {
-    //  id: 2,
-    //  latitude: 22.33632060929741,
-    //  longitude: 114.26344127329821,
-    //  title: "Coffee Shop - MFP",
-    //  image_url:  'http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/mfp_coffeeshop.jpg',
-    //  options: $scope.MFPOptions
-    //}
-    //$scope.markersArray.push(sMarker0);
-
 
     // map windows
     $scope.windowOptions = {
@@ -123,11 +84,9 @@ app.controller('MainController', ['$scope', '$log', '$http', function($scope, $l
         case 0:
           $scope.virtualBarnOptions.visible = !$scope.virtualBarnOptions.visible;
           break;
-
         case 1:
           $scope.MFPOptions.visible = !$scope.MFPOptions.visible;
           break;
-
         default:
           alert("ERROR");
       }
