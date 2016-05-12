@@ -135,6 +135,16 @@ app.controller('MainController', ['$scope', function($scope, $log) {
     //}
   }
 
+  $scope.updateJson = function(json) {
+    $http.post("/path/to/api/", json).success(function(data){
+      //Callback function here.
+      //"data" is the response from the server.
+      alert(data);
+    });
+  }
+
   $scope.init();
+
+
 
 }]);
