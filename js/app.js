@@ -105,6 +105,7 @@ app.controller('AdminController', ['$scope', '$log', '$http', function($scope, $
   }
 
   $scope.mySchema = {
+    "title": "Person",
     type: 'object',
     properties: {
       name: {
@@ -125,6 +126,32 @@ app.controller('AdminController', ['$scope', '$log', '$http', function($scope, $
   $scope.myStartVal = {
     age: 20
   };
+
+  $scope.jsonSchema = {
+    "title": "Barn Services Markers",
+    type: 'array',
+    "uniqueItems": true,
+    "items": {
+      "title": "Virtual Barn",
+      "type": "object",
+      properties: {
+        name: {
+          type: 'string',
+          title: 'Item Name',
+          required: true,
+          minLength: 1
+        },
+        age: {
+          type: 'integer',
+          title: 'Age',
+          required: true,
+          min: 0
+        }
+      }
+    }
+
+  };
+
 
   $scope.onChange = function (data) {
     console.log('Form changed!');
