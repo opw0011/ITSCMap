@@ -3,7 +3,7 @@ var app = angular.module('app',['uiGmapgoogle-maps', 'frapontillo.bootstrap-swit
   JSONEditorProvider.configure({
     defaults: {
       options: {
-        iconlib: 'bootstrap3',
+        iconlib: 'fontawesome4',
         theme: 'bootstrap3'
       }
     }
