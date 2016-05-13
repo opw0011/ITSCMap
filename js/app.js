@@ -1,4 +1,13 @@
-var app = angular.module('app',['uiGmapgoogle-maps', 'frapontillo.bootstrap-switch', 'angular-json-editor']);
+var app = angular.module('app',['uiGmapgoogle-maps', 'frapontillo.bootstrap-switch', 'angular-json-editor']).config(function (JSONEditorProvider) {
+  // these are set by default, but we set this for demonstration purposes
+  JSONEditorProvider.configure({
+    defaults: {
+      options: {
+        iconlib: 'bootstrap3',
+        theme: 'bootstrap3'
+      }
+    }
+  })});
 
 app.controller('MainController', ['$scope', '$log', '$http', function($scope, $log, $http) {
 
@@ -96,65 +105,90 @@ app.controller('MainController', ['$scope', '$log', '$http', function($scope, $l
 
 app.controller('AdminController', ['$scope', '$log', '$http', function($scope, $log, $http) {
 
-  $scope.updateJson = function(json) {
-    $http.post("/path/to/api/", json).success(function(data){
-      //Callback function here.
-      //"data" is the response from the server.
-      alert(data);
-    });
-  }
+  // Default loaded value for Json Editor
+  $scope.myStartVal = $http.get("data/setting.json"); // load value from http
 
-  $scope.mySchema = {
-    "title": "Person",
-    type: 'object',
-    properties: {
-      name: {
-        type: 'string',
-        title: 'Item Name',
-        required: true,
-        minLength: 1
-      },
-      age: {
-        type: 'integer',
-        title: 'Age',
-        required: true,
-        min: 0
-      }
-    }
-  };
-
-  $scope.myStartVal = {
-    age: 20
-  };
-
+  // Schema for Json Editor
   $scope.jsonSchema = {
     "title": "Barn Services Markers",
     type: 'array',
+    "format": "tabs",
     "uniqueItems": true,
     "items": {
-      "title": "Virtual Barn",
+      "title": "Marker",
       "type": "object",
+      //"format": "grid",
       properties: {
-        name: {
+        id: {
+          type: 'integer',
+          title: 'ID',
+          required: true,
+        },
+        latitude: {
+          type: 'number',
+          title: 'Latitude',
+          required: true,
+        },
+        longitude: {
+          type: 'number',
+          title: 'Lonitude',
+          required: true,
+        },
+        title: {
           type: 'string',
-          title: 'Item Name',
+          title: 'Marker\'s Title',
           required: true,
           minLength: 1
         },
-        age: {
-          type: 'integer',
-          title: 'Age',
+        image_url: {
+          type: 'string',
+          title: 'Makers\'s Image',
           required: true,
-          min: 0
+          minLength: 1
+        },
+        service_type: {
+          type: 'string',
+          title: 'Service Type',
+          required: true,
+          enum: [
+            'virtual_barn',
+            'mfp'
+          ]
         }
       }
     }
-
   };
-
 
   $scope.onChange = function (data) {
     console.log('Form changed!');
     console.dir(data);
+    $scope.newJsonData = data;
   };
+
+  $scope.reloadMap = function () {
+    $scope.initMap(angular.copy($scope.newJsonData)); // pass a copy to initMap()
+  }
+
+  // save the updated data to json file by calling the php
+  $scope.saveMap = function () {
+    var r = confirm("Confirm save changes to the server?");
+    if (r == true) {
+      updateJson($scope.newJsonData);
+    }
+  }
+
+  function updateJson(json) {
+    console.log((json));
+    $http({
+      url: "Admin.php",
+      method: "POST",
+      data: json,
+      headers: {'Content-Type': 'application/json;charset=utf-8'}
+    }).success(function (data, status, headers, config) {
+      alert(data);
+      $scope.reloadMap(); // reload the map after success update
+    }).error(function (data, status, headers, config) {
+      alert(data);
+    });
+  }
 }]);

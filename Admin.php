@@ -12,10 +12,12 @@ $file = 'data/setting.json';
 
 // read post json
 $inputJsonString= file_get_contents('php://input');
-if (isJson($inputJsonString)) {
+
+if (isJson($inputJsonString) && !$inputJsonString == "" ) {
     // put the json to setting.json
-    file_put_contents($file, $newJsonString);
+    file_put_contents($file, $inputJsonString);
     header("HTTP/ 200 OK");
+    echo "Success update json!";
 }
 else {
     echo "ERROR: Not a valid json file";
@@ -27,3 +29,4 @@ function isJson($string) {
     json_decode($string);
     return (json_last_error() == JSON_ERROR_NONE);
 }
+

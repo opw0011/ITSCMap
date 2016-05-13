@@ -23,10 +23,6 @@
   <body ng-controller="MainController">
     <div class="container-fluid" ng-controller="AdminController">
       <div class="container-fluid">
-        <!-- JSON Editor-->
-        <json-editor schema="jsonSchema" startval="myStartVal"
-                     on-change="onChange($editorValue)">
-        </json-editor>
 
         <ui-gmap-google-map center='map.center' zoom='map.zoom' options="options" id="itsc-map">
           <!--<ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id">-->
@@ -42,7 +38,16 @@
             </ui-gmap-windows>
           </ui-gmap-markers>
         </ui-gmap-google-map>
+        <hr>
+        <button class="btn btn-primary" ng-click="reloadMap()">Reload Map</button>
+        <button class="btn btn-success" ng-click="saveMap()">Save Map</button>
 
+        <!-- JSON Editor-->
+        <json-editor schema="jsonSchema" startval="myStartVal"
+                     on-change="onChange($editorValue)">
+        </json-editor>
+        <button class="btn btn-warning" ng-click="layout.showJson = !layout.showJson">Show Json (for debug use)</button>
+        <pre ng-show="layout.showJson">{{newJsonData | json}}</pre>
         <hr>
         <!--<div>-->
           <!--<p>For Debug only: (will not be shown to public)</p>-->
