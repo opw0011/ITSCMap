@@ -37,8 +37,9 @@
           </ui-gmap-markers>
         </ui-gmap-google-map>
         <hr>
-        <button class="btn btn-primary" ng-click="reloadMap()">Reload Map</button>
+        <button class="btn btn-primary" ng-click="reloadMap()">Preview Map</button>
         <button class="btn btn-success" ng-click="saveMap()">Save Map</button>
+        <span class="label label-warning">*Please make sure the map data is correct before "Save Map"</span>
 
         <!-- JSON Editor-->
         <json-editor schema="jsonSchema" startval="myStartVal"

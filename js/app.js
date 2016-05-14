@@ -11,8 +11,9 @@ var app = angular.module('app',['uiGmapgoogle-maps', 'frapontillo.bootstrap-swit
 
 app.controller('MainController', ['$scope', '$log', '$http', function($scope, $log, $http) {
 
-  var image_pc = "http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/computers.png"
+  var image_pc = "http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/computers.png";
   var image_mfp='http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/text.png';
+  var image_satellite = "http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/text2.png";
 
   // get json data
   $http.get("data/setting.json")
@@ -55,6 +56,12 @@ app.controller('MainController', ['$scope', '$log', '$http', function($scope, $l
       icon: image_mfp
     }
 
+    $scope.satelliteOptions = {
+      visible: true,
+      animation: google.maps.Animation.DROP,
+      icon: image_satellite
+    }
+
 
     // process markers array
     $scope.markersArray = inputMarketsArray;
@@ -66,6 +73,9 @@ app.controller('MainController', ['$scope', '$log', '$http', function($scope, $l
           break;
         case 'mfp':
           markerItem.options = $scope.MFPOptions;
+          break;
+        case 'satellite_printer':
+          markerItem.options = $scope.satelliteOptions;
           break;
       }
     });
@@ -152,7 +162,8 @@ app.controller('AdminController', ['$scope', '$log', '$http', function($scope, $
           required: true,
           enum: [
             'virtual_barn',
-            'mfp'
+            'mfp',
+            'satellite_printer'
           ]
         }
       }
