@@ -66,7 +66,9 @@ app.controller('MainController', ['$scope', '$log', '$http', function($scope, $l
     // process markers array
     $scope.markersArray = inputMarketsArray;
     // append options to each markers
-    $scope.markersArray.forEach(function (markerItem) {
+    $scope.markersArray.forEach(function (markerItem, key) {
+      // append auto id to each markers
+      markerItem.id = key;
       switch (markerItem.service_type) {
         case 'virtual_barn':
           markerItem.options = $scope.virtualBarnOptions;
@@ -129,11 +131,11 @@ app.controller('AdminController', ['$scope', '$log', '$http', function($scope, $
       "type": "object",
       //"format": "grid",
       properties: {
-        id: {
-          type: 'integer',
-          title: 'ID',
-          required: true,
-        },
+        //id: {
+        //  type: 'integer',
+        //  title: 'ID',
+        //  required: true,
+        //},
         latitude: {
           type: 'number',
           title: 'Latitude',
@@ -184,8 +186,15 @@ app.controller('AdminController', ['$scope', '$log', '$http', function($scope, $
   $scope.saveMap = function () {
     var r = confirm("Confirm save changes to the server?");
     if (r == true) {
-      updateJson($scope.newJsonData);
+      // TODO: ensure  json data is correct
+      var json = $scope.newJsonData
+      if(json == null || json == "") {
+        alert("ERROR: No Map Data!");
+        return;
+      }
+      updateJson(json);
     }
+
   }
 
   function updateJson(json) {
