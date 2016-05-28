@@ -129,6 +129,7 @@ app.controller('AdminController', ['$scope', '$log', '$http', function($scope, $
     "items": {
       "title": "Marker",
       "type": "object",
+      "headerTemplate": "[{{ i1 }}] {{ self.title }}",
       //"format": "grid",
       properties: {
         //id: {
