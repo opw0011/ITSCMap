@@ -14,20 +14,26 @@ app.controller('MainController', ['$scope', '$log', '$http', function($scope, $l
   var image_pc = "http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/computers.png";
   var image_mfp='http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/text.png';
   var image_satellite = "http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/text2.png";
+  var MAP_HEIGHT = 700;
 
   // get json data
   $http.get("data/setting.json")
       .then(function(response) {
         console.log(response.data);
         $scope.mapJson = angular.copy(response.data); // deep copy
-        $scope.initMap(response.data);
+        $scope.initMap(response.data, MAP_HEIGHT);
       });
 
-  $scope.initMap = function(inputMarketsArray) {
+  // adjust the display map height
+  $scope.setMapHeight = function(height) {
+    $("#itsc-map .angular-google-map-container").height(height);
+  }
 
+  $scope.initMap = function(inputMarketsArray, mapHeight) {
     // set map height
-    var mapHeight = 700; // or any other calculated value
-    $("#itsc-map .angular-google-map-container").height(mapHeight);
+    //var mapHeight = 700; // or any other calculated value
+    $scope.setMapHeight(mapHeight);
+    //$("#itsc-map .angular-google-map-container").height(mapHeight);
 
     // map starting location
     $scope.map = {
@@ -117,8 +123,12 @@ app.controller('MainController', ['$scope', '$log', '$http', function($scope, $l
 
 app.controller('AdminController', ['$scope', '$log', '$http', function($scope, $log, $http) {
 
+  var MAP_HEIGHT = 500;
+
   // Default loaded value for Json Editor
   $scope.myStartVal = $http.get("data/setting.json"); // load value from http
+
+  $scope.setMapHeight(400);
 
   // Schema for Json Editor
   $scope.jsonSchema = {
@@ -180,7 +190,7 @@ app.controller('AdminController', ['$scope', '$log', '$http', function($scope, $
   };
 
   $scope.reloadMap = function () {
-    $scope.initMap(angular.copy($scope.newJsonData)); // pass a copy to initMap()
+    $scope.initMap(angular.copy($scope.newJsonData), MAP_HEIGHT); // pass a copy to initMap()
   }
 
   // save the updated data to json file by calling the php
