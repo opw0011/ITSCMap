@@ -4,7 +4,9 @@ var app = angular.module('app',['uiGmapgoogle-maps', 'frapontillo.bootstrap-swit
     defaults: {
       options: {
         iconlib: 'fontawesome4',
-        theme: 'bootstrap3'
+        theme: 'bootstrap3',
+        disable_array_delete_all_rows: true,
+        disable_collapse: true
       }
     }
   })});

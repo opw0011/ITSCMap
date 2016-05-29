@@ -22,6 +22,12 @@
   </head>
   <body ng-controller="MainController">
     <div class="container-fluid" ng-controller="AdminController">
+        <div class = "page-header">
+            <h1>
+                Admin Panel
+                <small>Manage map markers data</small>
+            </h1>
+        </div>
         <!-- JSON Editor-->
         <json-editor schema="jsonSchema" startval="myStartVal" show_errors="always" buttons-controller="SaveJsonBtnController"
                      on-change="onChange($editorValue)">
