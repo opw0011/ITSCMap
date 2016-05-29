@@ -9,7 +9,7 @@ var app = angular.module('app',['uiGmapgoogle-maps', 'frapontillo.bootstrap-swit
     }
   })});
 
-app.controller('MainController', ['$scope', '$log', '$http', function($scope, $log, $http) {
+app.controller('MainController', function($rootScope, $scope, $log, $http) {
 
   var image_pc = "http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/computers.png";
   var image_mfp='http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/text.png';
@@ -21,7 +21,11 @@ app.controller('MainController', ['$scope', '$log', '$http', function($scope, $l
       .then(function(response) {
         console.log(response.data);
         $scope.mapJson = angular.copy(response.data); // deep copy
-        $scope.initMap(response.data, MAP_HEIGHT);
+        var options = {
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          //scrollwheel: false
+        };
+        $scope.initMap(response.data, MAP_HEIGHT, options);
       });
 
   // adjust the display map height
@@ -29,11 +33,31 @@ app.controller('MainController', ['$scope', '$log', '$http', function($scope, $l
     $("#itsc-map .angular-google-map-container").height(height);
   }
 
-  $scope.initMap = function(inputMarketsArray, mapHeight) {
+  $scope.initMap = function(inputMarketsArray, mapHeight, options) {
     // set map height
     //var mapHeight = 700; // or any other calculated value
     $scope.setMapHeight(mapHeight);
     //$("#itsc-map .angular-google-map-container").height(mapHeight);
+
+    // map events for admin panel, click to select long and lat
+    $scope.mapEvent = {
+      rightclick: function(mapModel, eventName, originalEventArgs)
+      {
+        console.log(originalEventArgs[0].latLng);
+        // add a new marker to indicate the cursor clicked position
+        $scope.$apply(function(){
+          var e = originalEventArgs[0];
+          var marker = {};
+          marker.id = 99999;
+          marker.coords = {};
+          marker.latitude = e.latLng.lat();
+          marker.longitude = e.latLng.lng();
+          //marker.options = {draggable : true};
+          $scope.markersArray.push(marker);
+          $scope.cursorPosition = {lat : marker.latitude, long: marker.longitude};
+        });
+      }
+    };
 
     // map starting location
     $scope.map = {
@@ -45,9 +69,11 @@ app.controller('MainController', ['$scope', '$log', '$http', function($scope, $l
     };
 
     // map options
-    $scope.options = {
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-    };
+    $scope.options = options;
+    //$scope.options = {
+    //  mapTypeId: google.maps.MapTypeId.ROADMAP,
+    //  scrollwheel: false
+    //};
 
     // markers options
     $scope.virtualBarnOptions = {
@@ -119,16 +145,14 @@ app.controller('MainController', ['$scope', '$log', '$http', function($scope, $l
       }
     }
   }
-}]);
+});
 
-app.controller('AdminController', ['$scope', '$log', '$http', function($scope, $log, $http) {
+app.controller('AdminController', function($rootScope, $scope, $log, $http) {
 
   var MAP_HEIGHT = 500;
 
   // Default loaded value for Json Editor
   $scope.myStartVal = $http.get("data/setting.json"); // load value from http
-
-  $scope.setMapHeight(400);
 
   // Schema for Json Editor
   $scope.jsonSchema = {
@@ -142,11 +166,6 @@ app.controller('AdminController', ['$scope', '$log', '$http', function($scope, $
       "headerTemplate": "[{{ i1 }}] {{ self.title }}",
       //"format": "grid",
       properties: {
-        //id: {
-        //  type: 'integer',
-        //  title: 'ID',
-        //  required: true,
-        //},
         latitude: {
           type: 'number',
           title: 'Latitude',
@@ -186,26 +205,48 @@ app.controller('AdminController', ['$scope', '$log', '$http', function($scope, $
   $scope.onChange = function (data) {
     console.log('Form changed!');
     console.dir(data);
-    $scope.newJsonData = data;
+    $rootScope.newJsonData = data;
   };
 
-  $scope.reloadMap = function () {
-    $scope.initMap(angular.copy($scope.newJsonData), MAP_HEIGHT); // pass a copy to initMap()
+  $rootScope.reloadMap = function () {
+    var options = {
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      //scrollwheel: false
+    };
+    $scope.initMap(angular.copy($rootScope.newJsonData), MAP_HEIGHT, options); // pass a copy to initMap()
   }
 
+  // save the updated data to json file by calling the php
+  //$scope.saveMap = function () {
+  //  var r = confirm("Confirm save changes to the server?");
+  //  if (r == true) {
+  //    // TODO: ensure  json data is correct
+  //    var json = $scope.newJsonData
+  //    if(json == null || json == "") {
+  //      alert("ERROR: No Map Data!");
+  //      return;
+  //    }
+  //    updateJson(json);
+  //  }
+  //
+  //}
+
+
+});
+
+app.controller('SaveJsonBtnController', function ($rootScope, $scope, $http) {
   // save the updated data to json file by calling the php
   $scope.saveMap = function () {
     var r = confirm("Confirm save changes to the server?");
     if (r == true) {
       // TODO: ensure  json data is correct
-      var json = $scope.newJsonData
+      var json = $rootScope.newJsonData
       if(json == null || json == "") {
         alert("ERROR: No Map Data!");
         return;
       }
       updateJson(json);
     }
-
   }
 
   function updateJson(json) {
@@ -217,9 +258,9 @@ app.controller('AdminController', ['$scope', '$log', '$http', function($scope, $
       headers: {'Content-Type': 'application/json;charset=utf-8'}
     }).success(function (data, status, headers, config) {
       alert(data);
-      $scope.reloadMap(); // reload the map after success update
+      $rootScope.reloadMap(); // reload the map after success update
     }).error(function (data, status, headers, config) {
       alert(data);
     });
   }
-}]);
+});

@@ -22,30 +22,25 @@
   </head>
   <body ng-controller="MainController">
     <div class="container-fluid" ng-controller="AdminController">
-        <ui-gmap-google-map center='map.center' zoom='map.zoom' options="options" id="itsc-map">
-          <!--<ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id">-->
-          <!--<ui-gmap-window options="windowOptions" closeClick="closeClick()" templateUrl="'templates/windowContent.html'" templateParameter="windowParams">-->
-          <!--</ui-gmap-window>-->
-          <!--</ui-gmap-marker>-->
-          <ui-gmap-markers models="markersArray" coords="'self'" options="'options'" click="onClick">
-            <ui-gmap-windows>
-              <div>
-                <h5>{{title}}</h5>
-                <img ng-src="{{image_url}}" class="img-responsive"  style="max-width: 100%; max-height:350px"/>
-              </div>
-            </ui-gmap-windows>
-          </ui-gmap-markers>
-        </ui-gmap-google-map>
-        <hr>
-        <button ng-click="setHeight(400)">Test</button>
-        <button class="btn btn-primary" ng-click="reloadMap()">Preview Changes</button>
-        <button class="btn btn-success" ng-click="saveMap()">Save Changes</button>
-        <span class="label label-warning">*Please make sure the map data is correct before "Save Map"</span>
-
         <!-- JSON Editor-->
-        <json-editor schema="jsonSchema" startval="myStartVal"
+        <json-editor schema="jsonSchema" startval="myStartVal" show_errors="always" buttons-controller="SaveJsonBtnController"
                      on-change="onChange($editorValue)">
+            <div class="clearfix"></div>
+            <div class="alert-danger" ng-show="!isValid"><strong>ERROR: Some data are not correctly input. Please check!</strong></div>
+            <button class="btn btn-success pull-right" ng-click="saveMap()" ng-disabled="!isValid">Save Changes</button>
         </json-editor>
+        <button class="btn btn-primary" ng-click="reloadMap()">Preview Changes</button>
+        <div class="well well-sm"><strong>Right Click</strong> the map to locate a point [Latitude: <strong>{{cursorPosition.lat}} </strong>, Longitude: <strong>{{cursorPosition.long}}</strong>]</div>
+        <ui-gmap-google-map center='map.center' zoom='map.zoom' options="options" id="itsc-map" events="mapEvent">
+            <ui-gmap-markers models="markersArray" coords="'self'" options="'options'" click="onClick">
+                <ui-gmap-windows>
+                    <div>
+                        <h5>{{title}}</h5>
+                        <img ng-src="{{image_url}}" class="img-responsive"  style="max-width: 100%; max-height:350px"/>
+                    </div>
+                </ui-gmap-windows>
+            </ui-gmap-markers>
+        </ui-gmap-google-map>
         <button class="btn btn-warning" ng-click="layout.showJson = !layout.showJson">Show Json (for debug use)</button>
         <pre ng-show="layout.showJson">{{newJsonData | json}}</pre>
         <hr>
@@ -54,8 +49,8 @@
           <!--<pre>{{mapJson | json:4}}</pre>-->
         <!--</div>-->
 
-        <div class="badge pull-right">V1.1</div>
-        <div class="label label-primary pull-left">Last Updated: 15 MAY 2016</div>
+        <div class="badge pull-right">V1.2</div>
+        <div class="label label-primary pull-left">Last Updated: 29 MAY 2016</div>
     </div>
 
 
