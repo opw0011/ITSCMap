@@ -56,7 +56,8 @@ app.controller('MainController', function($rootScope, $scope, $log, $http) {
           marker.longitude = e.latLng.lng();
           //marker.options = {draggable : true};
           $scope.markersArray.push(marker);
-          $scope.cursorPosition = {lat : marker.latitude, long: marker.longitude};
+
+          $rootScope.cursorPosition = {latitude : marker.latitude, longitude: marker.longitude};
         });
       }
     };
@@ -264,5 +265,20 @@ app.controller('SaveJsonBtnController', function ($rootScope, $scope, $http) {
     }).error(function (data, status, headers, config) {
       alert(data);
     });
+  }
+
+  // copy the right-click added marker to json editor
+  $scope.addNewMarker = function() {
+    //console.log($scope.cursorPosition);
+    var new_marker = $rootScope.cursorPosition;
+    if(new_marker == null || new_marker == "") {
+      console.log("ERROR: null new marker");
+      alert("Please right click on the map to locate the marker");
+      return;
+    }
+    var arr = $scope.editor.getValue();
+    arr.push(new_marker);
+    $scope.editor.setValue(arr);
+    //console.log($scope.editor.getValue());
   }
 });

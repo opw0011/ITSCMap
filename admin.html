@@ -31,12 +31,14 @@
         <!-- JSON Editor-->
         <json-editor schema="jsonSchema" startval="myStartVal" show_errors="always" buttons-controller="SaveJsonBtnController"
                      on-change="onChange($editorValue)">
+            <!--{{editor.getValue()}}-->
             <div class="clearfix"></div>
             <div class="alert-danger" ng-show="!isValid"><strong>ERROR: Some data are not correctly input. Please check!</strong></div>
             <button class="btn btn-success pull-right" ng-click="saveMap()" ng-disabled="!isValid">Save Changes</button>
+            <button class="btn btn-warning" ng-click="addNewMarker()" ng-disabled="!isValid">Create marker using current position</button>
         </json-editor>
-        <button class="btn btn-primary" ng-click="reloadMap()">Preview Changes</button>
-        <div class="well well-sm"><strong>Right Click</strong> the map to locate a point [Latitude: <strong>{{cursorPosition.lat}} </strong>, Longitude: <strong>{{cursorPosition.long}}</strong>]</div>
+        <button class="btn btn-primary pull-right" ng-click="reloadMap()">Preview Changes</button>
+        <div class="well well-sm"><strong>Right Click</strong> the map to locate a point [Latitude: <strong>{{cursorPosition.latitude}} </strong>, Longitude: <strong>{{cursorPosition.longitude}}</strong>]</div>
         <ui-gmap-google-map center='map.center' zoom='map.zoom' options="options" id="itsc-map" events="mapEvent">
             <ui-gmap-markers models="markersArray" coords="'self'" options="'options'" click="onClick">
                 <ui-gmap-windows>
