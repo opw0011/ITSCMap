@@ -176,7 +176,7 @@ app.controller('AdminController', function($rootScope, $scope, $log, $http) {
         },
         longitude: {
           type: 'number',
-          title: 'Lonitude',
+          title: 'Longitude',
           required: true,
         },
         title: {
@@ -187,7 +187,7 @@ app.controller('AdminController', function($rootScope, $scope, $log, $http) {
         },
         image_url: {
           type: 'string',
-          title: 'Makers\'s Image',
+          title: 'Makers\'s Image (image url)',
           required: true,
           minLength: 1
         },
