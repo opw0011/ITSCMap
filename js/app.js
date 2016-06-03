@@ -159,7 +159,7 @@ app.controller('AdminController', function($rootScope, $scope, $log, $http) {
 
   // Schema for Json Editor
   $scope.jsonSchema = {
-    "title": "Barn Services Markers",
+    "title": "ITSC Services Markers",
     type: 'array',
     "format": "tabs",
     "uniqueItems": true,
@@ -189,7 +189,7 @@ app.controller('AdminController', function($rootScope, $scope, $log, $http) {
           type: 'string',
           title: 'Makers\'s Image (image url)',
           required: true,
-          minLength: 1
+          //minLength: 1
         },
         service_type: {
           type: 'string',
