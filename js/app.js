@@ -133,6 +133,8 @@ app.controller('AdminController', function ($rootScope, $scope, $log, $http) {
 
     // Default loaded value for Json Editor
     $scope.myStartVal = $http.get("data/setting.json"); // load value from http
+    //console.log("Start value")
+    //console.log($scope.myStartVal);
 
     // Schema for Json Editor
     $scope.jsonSchema = {
@@ -214,6 +216,7 @@ app.controller('AdminController', function ($rootScope, $scope, $log, $http) {
                             enumSource: [
                                 {
                                     "source": "arr",
+                                    "title": "{{item.title}}",
                                     "value": "{{item.title}}"
                                 }
                             ]
@@ -222,13 +225,14 @@ app.controller('AdminController', function ($rootScope, $scope, $log, $http) {
                 }
             },
             marker_types: {
-                title: 'Service Types',
+                title: 'Marker Types',
                 id: "marker_types_array",
                 type: 'array',
                 format: 'tabs',
                 items: {
-                    title: "Types",
+                    title: "Service Type",
                     type: "object",
+                    "headerTemplate": "[{{ i1 }}] {{ self.title }}",
                     properties: {
                         title: {
                             type: 'string',
