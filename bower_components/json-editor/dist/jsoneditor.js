@@ -535,7 +535,9 @@ JSONEditor.prototype = {
     path = path || '#/definitions/';
     if(schema.definitions) {
       for(var i in schema.definitions) {
-        if(!schema.definitions.hasOwnProperty(i)) continue;
+        if(!schema.definitions.hasOwnProperty(i)) {
+          continue;
+        }
         this.refs[path+i] = schema.definitions[i];
         if(schema.definitions[i].definitions) {
           this._getDefinitions(schema.definitions[i],path+i+'/definitions/');
@@ -858,6 +860,12 @@ JSONEditor.Validator = Class.extend({
       for(i=0; i<schema["enum"].length; i++) {
         if(stringified === JSON.stringify(schema["enum"][i])) valid = true;
       }
+
+      // allow empty values for non-required enum
+      if (!valid && !schema.required && !stringified) {
+        valid = true;
+      }
+
       if(!valid) {
         errors.push({
           path: path,
@@ -1735,8 +1743,16 @@ JSONEditor.AbstractEditor = Class.extend({
   },
   getDefault: function() {
     if(this.schema["default"]) return this.schema["default"];
-    if(this.schema["enum"]) return this.schema["enum"][0];
-    
+
+    if (!this.isRequired() && (this.schema['enum'] || this.schema.enumSource)) {
+      // default to empty option for selects and dynamic selects that aren't required
+      return undefined;
+    }
+
+    if(this.schema["enum"]) {
+      return this.schema["enum"][0];
+    }
+
     var type = this.schema.type || this.schema.oneOf;
     if(type && Array.isArray(type)) type = type[0];
     if(type && typeof type === "object") type = type.type;
@@ -1754,7 +1770,15 @@ JSONEditor.AbstractEditor = Class.extend({
     return null;
   },
   getTitle: function() {
-    return this.schema.title || this.key;
+      //Title collapsable form sections
+      if (this.hasOwnProperty("hide_add_button")) {
+        if (this.parent !== undefined && !this.schema.title) {
+          return this.parent.schema.definitions[this.key].plural_title || this.parent.schema.definitions[this.key].title || this.key;
+        }
+        return this.schema.plural_title || this.schema.title || this.key;
+      }
+      //Title all else
+      return this.schema.title || this.key;
   },
   enable: function() {
     this.disabled = false;
@@ -1923,7 +1947,7 @@ JSONEditor.defaults.editors.string = JSONEditor.AbstractEditor.extend({
   },
   build: function() {
     var self = this, i;
-    if(!this.options.compact) this.header = this.label = this.theme.getFormInputLabel(this.getTitle());
+    if(!this.options.compact) this.header = this.label = this.theme.getFormInputLabel(this.getTitle(),this.isRequired());
     if(this.schema.description) this.description = this.theme.getFormInputDescription(this.schema.description);
 
     this.format = this.schema.format;
@@ -2723,7 +2747,7 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
 
       // Show/Hide button
       this.collapsed = false;
-      this.toggle_button = this.getButton('','collapse','Collapse');
+      this.toggle_button = this.getButton('','collapse',this.translate('button_collapse'));
       this.title_controls.appendChild(this.toggle_button);
       this.toggle_button.addEventListener('click',function(e) {
         e.preventDefault();
@@ -2731,12 +2755,12 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
         if(self.collapsed) {
           self.editor_holder.style.display = '';
           self.collapsed = false;
-          self.setButtonText(self.toggle_button,'','collapse','Collapse');
+          self.setButtonText(self.toggle_button,'','collapse',self.translate('button_collapse'));
         }
         else {
           self.editor_holder.style.display = 'none';
           self.collapsed = true;
-          self.setButtonText(self.toggle_button,'','expand','Expand');
+          self.setButtonText(self.toggle_button,'','expand',self.translate('button_expand'));
         }
       });
 
@@ -3134,7 +3158,11 @@ JSONEditor.defaults.editors.object = JSONEditor.AbstractEditor.extend({
       }
       // Otherwise, remove value unless this is the initial set or it's required
       else if(!initial && !self.isRequired(editor)) {
-        self.removeObjectProperty(i);
+
+        // do not delete if have an empty default for a non-required field
+        if (typeof editor.getDefault() !== 'undefined') {
+          self.removeObjectProperty(i);
+        }
       }
       // Otherwise, set the value to the default
       else {
@@ -3281,7 +3309,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
     if(!this.options.compact) {
       this.header = document.createElement('span');
       this.header.textContent = this.getTitle();
-      this.title = this.theme.getHeader(this.header);
+      this.title = this.theme.getHeader(this.header,this.isRequired());
       this.container.appendChild(this.title);
       this.title_controls = this.theme.getHeaderButtonHolder();
       this.title.appendChild(this.title_controls);
@@ -3595,8 +3623,8 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
         this.delete_last_row_button.style.display = 'none';
         this.remove_all_rows_button.style.display = 'none';
       }
-      else if(this.value.length === 1) {      
-        this.remove_all_rows_button.style.display = 'none';  
+      else if(this.value.length === 1) {
+        this.remove_all_rows_button.style.display = 'none';
 
         // If there are minItems items in the array, or configured to hide the delete_last_row button, hide the delete button beneath the rows
         if(minItems || this.hide_delete_last_row_buttons) {
@@ -3647,7 +3675,9 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
     var i = this.rows.length;
     
     self.rows[i] = this.getElementEditor(i);
-    self.row_cache[i] = self.rows[i];
+
+    // disable row cache so optional fields do not disappear when cached row reconstituted
+    //self.row_cache[i] = self.rows[i];
 
     if(self.tabs_holder) {
       self.rows[i].tab_text = document.createElement('span');
@@ -3781,7 +3811,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
         self.row_holder.style.display = row_holder_display;
         if(self.tabs_holder) self.tabs_holder.style.display = '';
         self.controls.style.display = controls_display;
-        self.setButtonText(this,'','collapse','Collapse');
+        self.setButtonText(this,'','collapse',self.translate('button_collapse'));
       }
       else {
         self.collapsed = true;
@@ -3789,7 +3819,7 @@ JSONEditor.defaults.editors.array = JSONEditor.AbstractEditor.extend({
         if(self.tabs_holder) self.tabs_holder.style.display = 'none';
         self.controls.style.display = 'none';
         if(self.panel) self.panel.style.display = 'none';
-        self.setButtonText(this,'','expand','Expand');
+        self.setButtonText(this,'','expand',self.translate('button_expand'));
       }
     });
 
@@ -3956,7 +3986,7 @@ JSONEditor.defaults.editors.table = JSONEditor.defaults.editors.array.extend({
     this.width = tmp.getNumColumns() + 2;
 
     if(!this.options.compact) {
-      this.title = this.theme.getHeader(this.getTitle());
+      this.title = this.theme.getHeader(this.getTitle(),this.isRequired());
       this.container.appendChild(this.title);
       this.title_controls = this.theme.getHeaderButtonHolder();
       this.title.appendChild(this.title_controls);
@@ -4314,12 +4344,12 @@ JSONEditor.defaults.editors.table = JSONEditor.defaults.editors.array.extend({
         if(self.collapsed) {
           self.collapsed = false;
           self.panel.style.display = '';
-          self.setButtonText(this,'','collapse','Collapse');
+          self.setButtonText(this,'','collapse',this.translate('button_collapse'));
         }
         else {
           self.collapsed = true;
           self.panel.style.display = 'none';
-          self.setButtonText(this,'','expand','Expand');
+          self.setButtonText(this,'','expand',this.translate('button_expand'));
         }
       });
 
@@ -4541,7 +4571,7 @@ JSONEditor.defaults.editors.multiple = JSONEditor.AbstractEditor.extend({
     var self = this;
     var container = this.container;
 
-    this.header = this.label = this.theme.getFormInputLabel(this.getTitle());
+    this.header = this.label = this.theme.getFormInputLabel(this.getTitle(),this.isRequired());
     this.container.appendChild(this.header);
 
     this.switcher = this.theme.getSwitcher(this.display_text);
@@ -4666,7 +4696,7 @@ JSONEditor.defaults.editors["enum"] = JSONEditor.AbstractEditor.extend({
   },
   build: function() {
     var container = this.container;
-    this.title = this.header = this.label = this.theme.getFormInputLabel(this.getTitle());
+    this.title = this.header = this.label = this.theme.getFormInputLabel(this.getTitle(),this.isRequired());
     this.container.appendChild(this.title);
 
     this.options.enum_titles = this.options.enum_titles || [];
@@ -4795,7 +4825,12 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
     // Sanitize value before setting it
     var sanitized = value;
     if(this.enum_values.indexOf(sanitized) < 0) {
-      sanitized = this.enum_values[0];
+      // DISABLE DYNAMIC SELECTOR INPUT CHECK
+      // Or else it will attempt to check for related values before they exist
+      ////////////////////////////////////////////////////////////////////////////
+      if (!this.schema.enumSource) {
+        sanitized = this.enum_values[0];
+      }
     }
 
     if(this.value === sanitized) {
@@ -4852,7 +4887,7 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
     // Enum options enumerated
     if(this.schema["enum"]) {
       var display = this.schema.options && this.schema.options.enum_titles || [];
-      
+
       $each(this.schema["enum"],function(i,option) {
         self.enum_options[i] = ""+option;
         self.enum_display[i] = ""+(display[i] || option);
@@ -4864,20 +4899,20 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
         self.enum_options.unshift('undefined');
         self.enum_values.unshift(undefined);
       }
-            
+
     }
     // Boolean
     else if(this.schema.type === "boolean") {
       self.enum_display = this.schema.options && this.schema.options.enum_titles || ['true','false'];
       self.enum_options = ['1',''];
       self.enum_values = [true,false];
-      
+
       if(!this.isRequired()){
         self.enum_display.unshift(' ');
         self.enum_options.unshift('undefined');
         self.enum_values.unshift(undefined);
       }
-    
+
     }
     // Dynamic Enum
     else if(this.schema.enumSource) {
@@ -4885,7 +4920,7 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
       this.enum_display = [];
       this.enum_options = [];
       this.enum_values = [];
-      
+
       // Shortcut declaration for using a single array
       if(!(Array.isArray(this.schema.enumSource))) {
         if(this.schema.enumValue) {
@@ -4921,7 +4956,7 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
           }
         }
       }
-      
+
       // Now, enumSource is an array of sources
       // Walk through this array and fix up the values
       for(i=0; i<this.enumSource.length; i++) {
@@ -4943,7 +4978,7 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
   },
   build: function() {
     var self = this;
-    if(!this.options.compact) this.header = this.label = this.theme.getFormInputLabel(this.getTitle());
+    if(!this.options.compact) this.header = this.label = this.theme.getFormInputLabel(this.getTitle(),this.isRequired());
     if(this.schema.description) this.description = this.theme.getFormInputDescription(this.schema.description);
 
     if(this.options.compact) this.container.className += ' compact';
@@ -4964,13 +4999,13 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
 
     this.control = this.theme.getFormControl(this.label, this.input, this.description);
     this.container.appendChild(this.control);
-
     this.value = this.enum_values[0];
   },
   onInputChange: function() {
     var val = this.input.value;
 
     var new_val;
+
     // Invalid option, use first option instead
     if(this.enum_options.indexOf(val) === -1) {
       new_val = this.enum_values[0];
@@ -5013,13 +5048,13 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
   },
   onWatchedFieldChange: function() {
     var self = this, vars, j;
-    
+
     // If this editor uses a dynamic select box
     if(this.enumSource) {
       vars = this.getWatchedFieldValues();
       var select_options = [];
       var select_titles = [];
-      
+
       for(var i=0; i<this.enumSource.length; i++) {
         // Constant values
         if(Array.isArray(this.enumSource[i])) {
@@ -5035,7 +5070,7 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
           } else {
             items = vars[this.enumSource[i].source];
           }
-          
+
           if(items) {
             // Only use a predefined part of the array
             if(this.enumSource[i].slice) {
@@ -5049,12 +5084,12 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
               }
               items = new_items;
             }
-            
+
             var item_titles = [];
             var item_values = [];
             for(j=0; j<items.length; j++) {
               var item = items[j];
-              
+
               // Rendered value
               if(this.enumSource[i].value) {
                 item_values[j] = this.enumSource[i].value({
@@ -5066,7 +5101,7 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
               else {
                 item_values[j] = items[j];
               }
-              
+
               // Rendered title
               if(this.enumSource[i].title) {
                 item_titles[j] = this.enumSource[i].title({
@@ -5079,40 +5114,51 @@ JSONEditor.defaults.editors.select = JSONEditor.AbstractEditor.extend({
                 item_titles[j] = item_values[j];
               }
             }
-            
+
             // TODO: sort
-            
+
             select_options = select_options.concat(item_values);
             select_titles = select_titles.concat(item_titles);
           }
         }
       }
-      
+
       var prev_value = this.value;
-      
+
+      // Add an empty option for non-required dynamic select boxes
+      if(!this.isRequired()) {
+        select_options.unshift(undefined);
+        select_titles.unshift(' ');
+      }
+
       this.theme.setSelectOptions(this.input, select_options, select_titles);
       this.enum_options = select_options;
       this.enum_display = select_titles;
       this.enum_values = select_options;
-      
+
       if(this.select2) {
         this.select2.select2('destroy');
       }
-      
+
       // If the previous value is still in the new select options, stick with it
       if(select_options.indexOf(prev_value) !== -1) {
         this.input.value = prev_value;
         this.value = prev_value;
       }
+      // DISABLE DYNAMIC SELECTOR INPUT CHECK
+      // Or else it will attempt to check for related values before they exist
+      ////////////////////////////////////////////////////////////////////////////
       // Otherwise, set the value to the first select option
+      /*
       else {
         this.input.value = select_options[0];
-        this.value = select_options[0] || "";  
+        this.value = select_options[0] || "";
         if(this.parent) this.parent.onChildEditorChange(this);
         else this.jsoneditor.onChange();
         this.jsoneditor.notifyWatchers(this.path);
       }
-      
+      */
+
       this.setupSelect2();
     }
 
@@ -5511,7 +5557,7 @@ JSONEditor.defaults.editors.multiselect = JSONEditor.AbstractEditor.extend({
   },
   build: function() {
     var self = this, i;
-    if(!this.options.compact) this.header = this.label = this.theme.getFormInputLabel(this.getTitle());
+    if(!this.options.compact) this.header = this.label = this.theme.getFormInputLabel(this.getTitle(),this.isRequired());
     if(this.schema.description) this.description = this.theme.getFormInputDescription(this.schema.description);
 
     if((!this.schema.format && this.option_keys.length < 8) || this.schema.format === "checkbox") {
@@ -5694,7 +5740,7 @@ JSONEditor.defaults.editors.base64 = JSONEditor.AbstractEditor.extend({
   },
   build: function() {    
     var self = this;
-    this.title = this.header = this.label = this.theme.getFormInputLabel(this.getTitle());
+    this.title = this.header = this.label = this.theme.getFormInputLabel(this.getTitle(),this.isRequired());
 
     // Input that holds the base64 string
     this.input = this.theme.getFormInputField('hidden');
@@ -5788,7 +5834,7 @@ JSONEditor.defaults.editors.upload = JSONEditor.AbstractEditor.extend({
   },
   build: function() {    
     var self = this;
-    this.title = this.header = this.label = this.theme.getFormInputLabel(this.getTitle());
+    this.title = this.header = this.label = this.theme.getFormInputLabel(this.getTitle(),this.isRequired());
 
     // Input that holds the base64 string
     this.input = this.theme.getFormInputField('hidden');
@@ -6097,11 +6143,7 @@ JSONEditor.AbstractTheme = Class.extend({
   },
   getModal: function() {
     var el = document.createElement('div');
-    el.style.backgroundColor = 'white';
-    el.style.border = '1px solid black';
-    el.style.boxShadow = '3px 3px black';
-    el.style.position = 'absolute';
-    el.style.zIndex = '10';
+    el.className = 'jse-modal';
     el.style.display = 'none';
     return el;
   },
@@ -6128,19 +6170,20 @@ JSONEditor.AbstractTheme = Class.extend({
     return el;
   },
   disableHeader: function(header) {
-    header.style.color = '#ccc';
+    header.className = 'jse-disableHeader';
   },
   disableLabel: function(label) {
-    label.style.color = '#ccc';
+    label.className = 'jse-disableLabel';
   },
   enableHeader: function(header) {
-    header.style.color = '';
+    header.className = '';
   },
   enableLabel: function(label) {
-    label.style.color = '';
+    label.className = '';
   },
-  getFormInputLabel: function(text) {
+  getFormInputLabel: function(text, required) {
     var el = document.createElement('label');
+    if (required) el.className += 'required';
     el.appendChild(document.createTextNode(text));
     return el;
   },
@@ -6149,7 +6192,7 @@ JSONEditor.AbstractTheme = Class.extend({
     el.style.fontWeight = 'normal';
     return el;
   },
-  getHeader: function(text) {
+  getHeader: function(text, required) {
     var el = document.createElement('h3');
     if(typeof text === "string") {
       el.textContent = text;
@@ -6158,26 +6201,26 @@ JSONEditor.AbstractTheme = Class.extend({
       el.appendChild(text);
     }
 
+    if(required)el.className += " required";
+    
     return el;
   },
   getCheckbox: function() {
     var el = this.getFormInputField('checkbox');
-    el.style.display = 'inline-block';
-    el.style.width = 'auto';
+    el.className = 'jse-Checkbox';
     return el;
   },
   getMultiCheckboxHolder: function(controls,label,description) {
     var el = document.createElement('div');
 
     if(label) {
-      label.style.display = 'block';
+      el.className = 'jse-MultiCheckboxLabel';
       el.appendChild(label);
     }
 
     for(var i in controls) {
       if(!controls.hasOwnProperty(i)) continue;
-      controls[i].style.display = 'inline-block';
-      controls[i].style.marginRight = '20px';
+      controls[i].className = 'jse-MultiCheckboxControl';
       el.appendChild(controls[i]);
     }
 
@@ -6192,15 +6235,7 @@ JSONEditor.AbstractTheme = Class.extend({
   },
   getSwitcher: function(options) {
     var switcher = this.getSelectInput(options);
-    switcher.style.backgroundColor = 'transparent';
-    switcher.style.display = 'inline-block';
-    switcher.style.fontStyle = 'italic';
-    switcher.style.fontWeight = 'normal';
-    switcher.style.height = 'auto';
-    switcher.style.marginBottom = 0;
-    switcher.style.marginLeft = '5px';
-    switcher.style.padding = '0 0 0 3px';
-    switcher.style.width = 'auto';
+    switcher.className = 'jse-Switcher';
     return switcher;
   },
   getSwitcherOptions: function(switcher) {
@@ -6221,10 +6256,7 @@ JSONEditor.AbstractTheme = Class.extend({
   },
   getTextareaInput: function() {
     var el = document.createElement('textarea');
-    el.style = el.style || {};
-    el.style.width = '100%';
-    el.style.height = '300px';
-    el.style.boxSizing = 'border-box';
+    el.className = 'jse-TextareaInput';
     return el;
   },
   getRangeInput: function(min,max,step) {
@@ -6258,10 +6290,7 @@ JSONEditor.AbstractTheme = Class.extend({
   },
   getIndentedPanel: function() {
     var el = document.createElement('div');
-    el.style = el.style || {};
-    el.style.paddingLeft = '10px';
-    el.style.marginLeft = '10px';
-    el.style.borderLeft = '1px solid #ccc';
+    el.className = 'jse-IndentedPanel';
     return el;
   },
   getChildEditorHolder: function() {
@@ -6365,18 +6394,7 @@ JSONEditor.AbstractTheme = Class.extend({
   getTab: function(span) {
     var el = document.createElement('div');
     el.appendChild(span);
-    el.style = el.style || {};
-    this.applyStyles(el,{
-      border: '1px solid #ccc',
-      borderWidth: '1px 0 1px 1px',
-      textAlign: 'center',
-      lineHeight: '30px',
-      borderRadius: '5px',
-      borderBottomRightRadius: 0,
-      borderTopRightRadius: 0,
-      fontWeight: 'bold',
-      cursor: 'pointer'
-    });
+    el.className = 'jse-Tab';
     return el;
   },
   getTabContentHolder: function(tab_holder) {
@@ -6386,23 +6404,19 @@ JSONEditor.AbstractTheme = Class.extend({
     return this.getIndentedPanel();
   },
   markTabActive: function(tab) {
-    this.applyStyles(tab,{
-      opacity: 1,
-      background: 'white'
-    });
+    tab.classList.add("TabActive");
+    tab.classList.remove("TabInActive");
   },
   markTabInactive: function(tab) {
-    this.applyStyles(tab,{
-      opacity:0.5,
-      background: ''
-    });
+    tab.classList.remove("TabActive");
+    tab.classList.add("TabInActive");
   },
   addTab: function(holder, tab) {
     holder.children[0].appendChild(tab);
   },
   getBlockLink: function() {
     var link = document.createElement('a');
-    link.style.display = 'block';
+    link.className = 'jse-BlockLink';
     return link;
   },
   getBlockLinkHolder: function() {
@@ -6415,7 +6429,7 @@ JSONEditor.AbstractTheme = Class.extend({
   },
   createMediaLink: function(holder,link,media) {
     holder.appendChild(link);
-    media.style.width='100%';
+    media.className = 'jse-Media';
     holder.appendChild(media);
   },
   createImageLink: function(holder,link,image) {
@@ -6439,10 +6453,11 @@ JSONEditor.defaults.themes.bootstrap2 = JSONEditor.AbstractTheme.extend({
     el.className = 'row-fluid';
     return el;
   },
-  getFormInputLabel: function(text) {
+  getFormInputLabel: function(text, required) {
     var el = this._super(text);
     el.style.display = 'inline-block';
     el.style.fontWeight = 'bold';
+    if(required)el.className += " required";
     return el;
   },
   setGridColumnSize: function(el,size) {
@@ -6801,9 +6816,10 @@ JSONEditor.defaults.themes.foundation = JSONEditor.AbstractTheme.extend({
     }
     input.group = this.closest(input,'.form-control');
   },
-  getFormInputLabel: function(text) {
+  getFormInputLabel: function(text, required) {
     var el = this._super(text);
     el.style.display = 'inline-block';
+    if(required)el.className += " required";
     return el;
   },
   getFormInputField: function(type) {
@@ -6888,9 +6904,10 @@ JSONEditor.defaults.themes.foundation3 = JSONEditor.defaults.themes.foundation.e
     el.style.fontSize = '.6em';
     return el;
   },
-  getFormInputLabel: function(text) {
+  getFormInputLabel: function(text, required) {
     var el = this._super(text);
     el.style.fontWeight = 'bold';
+    if(required)el.className += " required";
     return el;
   },
   getTabHolder: function() {
@@ -6946,9 +6963,10 @@ JSONEditor.defaults.themes.foundation4 = JSONEditor.defaults.themes.foundation.e
     el.style.fontSize = '.8rem';
     return el;
   },
-  getFormInputLabel: function(text) {
+  getFormInputLabel: function(text, required) {
     var el = this._super(text);
     el.style.fontWeight = 'bold';
+    if(required)el.className += " required";
     return el;
   }
 });
@@ -7064,11 +7082,12 @@ JSONEditor.defaults.themes.foundation6 = JSONEditor.defaults.themes.foundation5.
 });
 
 JSONEditor.defaults.themes.html = JSONEditor.AbstractTheme.extend({
-  getFormInputLabel: function(text) {
+  getFormInputLabel: function(text, required) {
     var el = this._super(text);
     el.style.display = 'block';
     el.style.marginBottom = '3px';
     el.style.fontWeight = 'bold';
+    if(required)el.className += " required";
     return el;
   },
   getFormInputDescription: function(text) {
@@ -7202,10 +7221,11 @@ JSONEditor.defaults.themes.jqueryui = JSONEditor.AbstractTheme.extend({
     el.style.fontSize = '.7em';
     return el;
   },
-  getFormInputLabel: function(text) {
+  getFormInputLabel: function(text, required) {
     var el = document.createElement('label');
     el.style.fontWeight = 'bold';
     el.style.display = 'block';
+    if(required)el.className += " required";
     el.textContent = text;
     return el;
   },
@@ -7827,7 +7847,11 @@ JSONEditor.defaults.languages.en = {
   /**
     * Title on Collapse buttons
     */
-  button_collapse: "Collapse"
+  button_collapse: "Collapse",
+  /**
+    * Title on Expand buttons
+    */
+  button_expand: "Expand"
 };
 
 // Miscellaneous Plugin Settings
