@@ -15,9 +15,9 @@ var app = angular.module('app', ['uiGmapgoogle-maps', 'frapontillo.bootstrap-swi
 
 app.controller('MainController', function ($rootScope, $scope, $log, $http, $filter) {
 
-    var image_pc = "http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/computers.png";
-    var image_mfp = 'http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/text.png';
-    var image_satellite = "http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/text2.png";
+    //var image_pc = "http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/computers.png";
+    //var image_mfp = 'http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/text.png';
+    //var image_satellite = "http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/text2.png";
     var MAP_HEIGHT = 700;
 
     // get json data
@@ -65,18 +65,10 @@ app.controller('MainController', function ($rootScope, $scope, $log, $http, $fil
         };
 
         // map starting location
-        //$scope.map = {
-        //  center: {
-        //    latitude: 22.33562097677705,
-        //    longitude: 114.26574931415553
-        //  },
-        //  zoom: 17
-        //};
         $scope.map = inputJson.map
 
         // map options
         $scope.options = options;
-
 
         // markers options
         $scope.serviceTypeArray = inputJson.marker_types;
@@ -94,30 +86,7 @@ app.controller('MainController', function ($rootScope, $scope, $log, $http, $fil
             $scope.markerOptionsArray.push(obj);
             //console.log($scope.markerOptionsArray);
         });
-        //$scope.markerOptionsArray["gg"] = 2;
-        //
-        //$scope.markerOptionsArray.push(33332);
         console.log($scope.markerOptionsArray);
-
-
-        //$scope.virtualBarnOptions = {
-        //  visible: true,
-        //  animation: google.maps.Animation.DROP,
-        //  icon: image_pc
-        //}
-        //
-        //$scope.MFPOptions = {
-        //  visible: true,
-        //  animation: google.maps.Animation.DROP,
-        //  icon: image_mfp
-        //}
-        //
-        //$scope.satelliteOptions = {
-        //  visible: true,
-        //  animation: google.maps.Animation.DROP,
-        //  icon: image_satellite
-        //}
-
 
         // process markers array
         $scope.markersArray = inputJson.markers;
@@ -126,8 +95,6 @@ app.controller('MainController', function ($rootScope, $scope, $log, $http, $fil
             // append auto id to each markers
             markerItem.id = key;
             var marker_type_title = markerItem.service_type;
-            //console.log("adding");
-            //console.log($scope.markerOptionsArray[marker_type_title]);
 
             // append marker's icon and service type information to each marker
             //markerItem.options = $scope.markerOptionsArray[marker_type_title];
@@ -139,18 +106,6 @@ app.controller('MainController', function ($rootScope, $scope, $log, $http, $fil
             else {
                 console.log("ERROR: no matched icon found");
             }
-
-            //switch (markerItem.service_type) {
-            //  case 'virtual_barn':
-            //    markerItem.options = $scope.virtualBarnOptions;
-            //    break;
-            //  case 'mfp':
-            //    markerItem.options = $scope.MFPOptions;
-            //    break;
-            //  case 'satellite_printer':
-            //    markerItem.options = $scope.satelliteOptions;
-            //    break;
-            //}
         });
 
         // map windows
@@ -169,20 +124,6 @@ app.controller('MainController', function ($rootScope, $scope, $log, $http, $fil
         $scope.closeClick = function () {
             $scope.windowOptions.visible = false;
         };
-
-        //$scope.toggleMarkerVisible = function(type) {
-        //  console.log("toggle visibility of type " + type);
-        //  switch (type) {
-        //    case 0:
-        //      $scope.virtualBarnOptions.visible = !$scope.virtualBarnOptions.visible;
-        //      break;
-        //    case 1:
-        //      $scope.MFPOptions.visible = !$scope.MFPOptions.visible;
-        //      break;
-        //    default:
-        //      alert("ERROR");
-        //  }
-        //}
     }
 });
 
@@ -303,8 +244,6 @@ app.controller('AdminController', function ($rootScope, $scope, $log, $http) {
                     }
                 }
             }
-
-
         } // end properties
     };
 
@@ -321,23 +260,6 @@ app.controller('AdminController', function ($rootScope, $scope, $log, $http) {
         };
         $scope.initMap(angular.copy($rootScope.newJsonData), MAP_HEIGHT, options); // pass a copy to initMap()
     }
-
-    // save the updated data to json file by calling the php
-    //$scope.saveMap = function () {
-    //  var r = confirm("Confirm save changes to the server?");
-    //  if (r == true) {
-    //    // TODO: ensure  json data is correct
-    //    var json = $scope.newJsonData
-    //    if(json == null || json == "") {
-    //      alert("ERROR: No Map Data!");
-    //      return;
-    //    }
-    //    updateJson(json);
-    //  }
-    //
-    //}
-
-
 });
 
 app.controller('SaveJsonBtnController', function ($rootScope, $scope, $http) {
