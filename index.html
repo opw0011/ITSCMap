@@ -37,34 +37,39 @@
         </ui-gmap-markers>
       </ui-gmap-google-map>
 
-      <!--<div ng-cloak>-->
-        <!--<input bs-switch type="checkbox" switch-off-text="OFF" switch-on-text="ON" ng-model="virtualBarnOptions.visible" switch-label="Virtual Barn Workstation"/>-->
-        <!--<input bs-switch type="checkbox" switch-off-text="OFF" switch-on-text="ON" ng-model="MFPOptions.visible" switch-label="Mfp Printer"/>-->
-        <!--<input bs-switch type="checkbox" switch-off-text="OFF" switch-on-text="ON" ng-model="satelliteOptions.visible" switch-label="Satellite Printer"/>-->
-      <!--</div>-->
+      <!--{{markerOptionsArray}}-->
       <div class="container-fluid">
-        <div class="checkbox-inline">
+        <div class="checkbox-inline" ng-repeat="option in markerOptionsArray">
           <label>
-            <input type="checkbox" ng-model="virtualBarnOptions.visible" > Virtual Barn Workstation
+            <input type="checkbox" ng-model="option.visible" > {{option.title}}
           </label>
-          <img src="http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/computers.png" ng-click="virtualBarnOptions.visible = !virtualBarnOptions.visible">
+          <img ng-src="{{option.icon}}" ng-click="option.visible = !option.visible">
         </div>
-
-        <div class="checkbox-inline">
-          <label>
-            <input type="checkbox" ng-model="MFPOptions.visible"> MFP Printer
-          </label>
-          <img src="http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/text.png" ng-click="MFPOptions.visible = !MFPOptions.visible">
-        </div>
-
-        <div class="checkbox-inline">
-          <label>
-            <input type="checkbox" ng-model="satelliteOptions.visible"> Satellite Printer
-          </label>
-          <img src="http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/text2.png" ng-click="satelliteOptions.visible = !satelliteOptions.visible">
-        </div>
-
       </div>
+
+      <!--<div class="container-fluid">-->
+        <!--<div class="checkbox-inline">-->
+          <!--<label>-->
+            <!--<input type="checkbox" ng-model="virtualBarnOptions.visible" > Virtual Barn Workstation-->
+          <!--</label>-->
+          <!--<img src="http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/computers.png" ng-click="virtualBarnOptions.visible = !virtualBarnOptions.visible">-->
+        <!--</div>-->
+
+        <!--<div class="checkbox-inline">-->
+          <!--<label>-->
+            <!--<input type="checkbox" ng-model="MFPOptions.visible"> MFP Printer-->
+          <!--</label>-->
+          <!--<img src="http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/text.png" ng-click="MFPOptions.visible = !MFPOptions.visible">-->
+        <!--</div>-->
+
+        <!--<div class="checkbox-inline">-->
+          <!--<label>-->
+            <!--<input type="checkbox" ng-model="satelliteOptions.visible"> Satellite Printer-->
+          <!--</label>-->
+          <!--<img src="http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/text2.png" ng-click="satelliteOptions.visible = !satelliteOptions.visible">-->
+        <!--</div>-->
+
+      <!--</div>-->
       <!--<hr>-->
       <!--<div>-->
         <!--<p>For Debug only: (will not be shown to public)</p>-->
