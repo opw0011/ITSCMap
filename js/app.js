@@ -22,6 +22,7 @@ app.controller('MainController', function($rootScope, $scope, $log, $http) {
   $http.get("data/setting.json")
       .then(function(response) {
         console.log(response.data);
+        //var marker_data = response.data.markers;
         $scope.mapJson = angular.copy(response.data); // deep copy
         var options = {
           mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -35,7 +36,7 @@ app.controller('MainController', function($rootScope, $scope, $log, $http) {
     $("#itsc-map .angular-google-map-container").height(height);
   }
 
-  $scope.initMap = function(inputMarketsArray, mapHeight, options) {
+  $scope.initMap = function(inputJson, mapHeight, options) {
     // set map height
     //var mapHeight = 700; // or any other calculated value
     $scope.setMapHeight(mapHeight);
@@ -99,7 +100,7 @@ app.controller('MainController', function($rootScope, $scope, $log, $http) {
 
 
     // process markers array
-    $scope.markersArray = inputMarketsArray;
+    $scope.markersArray = inputJson.markers;
     // append options to each markers
     $scope.markersArray.forEach(function (markerItem, key) {
       // append auto id to each markers
@@ -158,52 +159,105 @@ app.controller('AdminController', function($rootScope, $scope, $log, $http) {
   $scope.myStartVal = $http.get("data/setting.json"); // load value from http
 
   // Schema for Json Editor
+
   $scope.jsonSchema = {
-    "title": "ITSC Services Markers",
-    type: 'array',
-    "format": "tabs",
-    "uniqueItems": true,
-    "items": {
-      "title": "Marker",
-      "type": "object",
-      "headerTemplate": "[{{ i1 }}] {{ self.title }}",
-      //"format": "grid",
-      properties: {
-        latitude: {
-          type: 'number',
-          title: 'Latitude',
-          required: true,
-        },
-        longitude: {
-          type: 'number',
-          title: 'Longitude',
-          required: true,
-        },
-        title: {
-          type: 'string',
-          title: 'Marker\'s Title',
-          required: true,
-          minLength: 1
-        },
-        image_url: {
-          type: 'string',
-          title: 'Makers\'s Image (image url)',
-          required: true,
-          //minLength: 1
-        },
-        service_type: {
-          type: 'string',
-          title: 'Service Type',
-          required: true,
-          enum: [
-            'virtual_barn',
-            'mfp',
-            'satellite_printer'
-          ]
+    title: "ITSC Services Markers",
+    type: 'object',
+    uniqueItems: true,
+    properties: {
+      markers : {
+        title: 'Markers Information',
+        type: 'array',
+        format: 'tabs',
+        "items": {
+          "title": "Marker",
+          "type": "object",
+          "headerTemplate": "[{{ i1 }}] {{ self.title }}",
+          properties: {
+            latitude: {
+              type: 'number',
+              title: 'Latitude',
+              required: true,
+            },
+            longitude: {
+              type: 'number',
+              title: 'Longitude',
+              required: true,
+            },
+            title: {
+              type: 'string',
+              title: 'Marker\'s Title',
+              required: true,
+              minLength: 1
+            },
+            image_url: {
+              type: 'string',
+              title: 'Makers\'s Image (image url)',
+              required: true,
+              //minLength: 1
+            },
+            service_type: {
+              type: 'string',
+              title: 'Service Type',
+              required: true,
+              enum: [
+                'virtual_barn',
+                'mfp',
+                'satellite_printer'
+              ]
+            }
+          }
         }
       }
-    }
+    },
+
   };
+  //$scope.jsonSchema = {
+  //  "title": "ITSC Services Markers",
+  //  type: 'array',
+  //  "format": "tabs",
+  //  "uniqueItems": true,
+  //  "items": {
+  //    "title": "Marker",
+  //    "type": "object",
+  //    "headerTemplate": "[{{ i1 }}] {{ self.title }}",
+  //    //"format": "grid",
+  //    properties: {
+  //      latitude: {
+  //        type: 'number',
+  //        title: 'Latitude',
+  //        required: true,
+  //      },
+  //      longitude: {
+  //        type: 'number',
+  //        title: 'Longitude',
+  //        required: true,
+  //      },
+  //      title: {
+  //        type: 'string',
+  //        title: 'Marker\'s Title',
+  //        required: true,
+  //        minLength: 1
+  //      },
+  //      image_url: {
+  //        type: 'string',
+  //        title: 'Makers\'s Image (image url)',
+  //        required: true,
+  //        //minLength: 1
+  //      },
+  //      service_type: {
+  //        type: 'string',
+  //        title: 'Service Type',
+  //        required: true,
+  //        enum: [
+  //          'virtual_barn',
+  //          'mfp',
+  //          'satellite_printer'
+  //        ]
+  //      }
+  //    }
+  //  }
+  //};
 
   $scope.onChange = function (data) {
     console.log('Form changed!');
@@ -269,16 +323,16 @@ app.controller('SaveJsonBtnController', function ($rootScope, $scope, $http) {
 
   // copy the right-click added marker to json editor
   $scope.addNewMarker = function() {
-    //console.log($scope.cursorPosition);
+    console.log("Right Click create new marker");
     var new_marker = $rootScope.cursorPosition;
     if(new_marker == null || new_marker == "") {
       console.log("ERROR: null new marker");
       alert("Please right click on the map to locate the marker");
       return;
     }
-    var arr = $scope.editor.getValue();
-    arr.push(new_marker);
-    $scope.editor.setValue(arr);
+    var json = $scope.editor.getValue();
+    json.markers.push(new_marker);
+    $scope.editor.setValue(json);
     //console.log($scope.editor.getValue());
   }
 });
