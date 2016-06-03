@@ -64,13 +64,14 @@ app.controller('MainController', function($rootScope, $scope, $log, $http) {
     };
 
     // map starting location
-    $scope.map = {
-      center: {
-        latitude: 22.33562097677705,
-        longitude: 114.26574931415553
-      },
-      zoom: 17
-    };
+    //$scope.map = {
+    //  center: {
+    //    latitude: 22.33562097677705,
+    //    longitude: 114.26574931415553
+    //  },
+    //  zoom: 17
+    //};
+    $scope.map = inputJson.map
 
     // map options
     $scope.options = options;
@@ -164,7 +165,35 @@ app.controller('AdminController', function($rootScope, $scope, $log, $http) {
     title: "ITSC Services Markers",
     type: 'object',
     uniqueItems: true,
-    properties: {
+    properties: { // object properties
+      map: {  // map initial location
+        title: 'Map Initial Location',
+        type: 'object',
+        properties: {
+          center: {
+            title: 'Location',
+            type: 'object',
+            properties: {
+              latitude: {
+                type: 'number',
+                title: 'Latitude',
+                required: true
+              },
+              longitude: {
+                type: 'number',
+                title: 'Longitude',
+                required: true
+              }
+            }
+          },
+          zoom: {
+            type: 'integer',
+            title: 'Zoom',
+            required: true
+          }
+        }
+
+      },
       markers : {
         title: 'Markers Information',
         type: 'array',
