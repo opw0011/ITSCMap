@@ -13,12 +13,16 @@ var app = angular.module('app', ['uiGmapgoogle-maps', 'frapontillo.bootstrap-swi
     })
 });
 
-app.controller('MainController', function ($rootScope, $scope, $log, $http, $filter) {
+app.controller('MainController', function ($rootScope, $scope, $log, $http, $filter,$timeout) {
 
     //var image_pc = "http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/computers.png";
     //var image_mfp = 'http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/text.png';
     //var image_satellite = "http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/text2.png";
     var MAP_HEIGHT = 700;
+    $rootScope.cursorPosition = {
+        latitude: 0,
+        longitude: 0
+    }
 
     // get json data
     $scope.myPromise = $http.get("data/setting.json")
@@ -60,9 +64,19 @@ app.controller('MainController', function ($rootScope, $scope, $log, $http, $fil
                     $scope.markersArray.push(marker);
 
                     $rootScope.cursorPosition = {latitude: marker.latitude, longitude: marker.longitude};
+
                 });
+                setTimeout(function() { confirmRightClickAddNewMarker(); }, 500);
             }
         };
+
+        function confirmRightClickAddNewMarker() {
+            var r = confirm("Do you want to add a new marker using current position?");
+            if( r == true ){
+                document.getElementById("btn_new_marker").click();
+                //$("button.btn.btn-default.json-editor-btn-add").click();
+            }
+        }
 
         // map starting location
         $scope.map = inputJson.map
@@ -157,6 +171,7 @@ app.controller('AdminController', function ($rootScope, $scope, $log, $http) {
                             type: 'number',
                             title: 'Latitude',
                             required: true,
+                            default: 0
                         },
                         longitude: {
                             type: 'number',
@@ -286,9 +301,13 @@ app.controller('AdminController', function ($rootScope, $scope, $log, $http) {
         $scope.jsonSchema.properties.marker_types.options.hidden = arr[1];
         $scope.jsonSchema.properties.map.options.hidden = arr[2];
     }
+
+    //$rootScope.updateNewMarkerLatLon = function () {
+    //
+    //}
 });
 
-app.controller('SaveJsonBtnController', function ($rootScope, $scope, $http) {
+app.controller('SaveJsonBtnController', function ($rootScope, $scope, $http, $timeout, $window) {
     // save the updated data to json file by calling the php
     $scope.saveMap = function () {
         var r = confirm("Confirm save changes to the server?");
@@ -331,5 +350,14 @@ app.controller('SaveJsonBtnController', function ($rootScope, $scope, $http) {
         json.markers.push(new_marker);
         $scope.editor.setValue(json);
         //console.log($scope.editor.getValue());
+
+        // go to the new marker
+
+        $timeout(function() {
+            angular.element('#nav_json_editor > li > a').first().click()
+            angular.element('div[data-schemapath="root.markers"] > div > div.tabs.list-group > a > span').last().trigger( "click" );
+            $window.scrollTo(0, 0);
+        }, 100);
+
     }
 });

@@ -30,7 +30,7 @@
             </h1>
         </div>
         <!--{{jsonSchema.properties.map.options}}-->
-        <ul class="nav nav-tabs" ng-init="activeTab = 0">
+        <ul class="nav nav-tabs" ng-init="activeTab = 0" id="nav_json_editor">
             <li ng-class="{active : activeTab == 0}"><a ng-click="onMenuSelect(0)">Markers</a></li>
             <li ng-class="{active : activeTab == 1}"><a ng-click="onMenuSelect(1)">Marker Types</a></li>
             <li ng-class="{active : activeTab == 2}"><a ng-click="onMenuSelect(2)">Map Information</a></li>
@@ -43,7 +43,7 @@
             <div class="clearfix"></div>
             <div class="alert-danger" ng-show="!isValid"><strong>ERROR: Some data are not correctly input. Please check!</strong></div>
             <button class="btn btn-success pull-right" ng-click="saveMap()" ng-disabled="!isValid">Save Changes</button>
-            <button class="btn btn-warning" ng-click="addNewMarker()" ng-disabled="!isValid">Create marker using current position</button>
+            <button class="btn btn-warning" ng-click="addNewMarker()" ng-disabled="!isValid" id="btn_new_marker">Create marker using current position</button>
         </json-editor>
         <button class="btn btn-primary pull-right" ng-click="reloadMap()">Preview Changes</button>
         <div class="well well-sm"><strong>Right Click</strong> the map to locate a point [Latitude: <strong>{{cursorPosition.latitude}} </strong>, Longitude: <strong>{{cursorPosition.longitude}}</strong>]</div>
@@ -62,8 +62,8 @@
         <hr>
 
         <!-- Project Version -->
-        <div class="badge pull-right">V1.4</div>
-        <div class="label label-primary pull-left">Last Updated: 3 June 2016</div>
+        <div class="badge pull-right">V1.5</div>
+        <div class="label label-primary pull-left">Last Updated: 11 June 2016</div>
     </div>
 
 
