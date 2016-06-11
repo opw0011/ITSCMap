@@ -2,3 +2,11 @@ body, html {
     height: 100%;
     width: 100%;
 }
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+    color: #ffffff;
+    cursor: default;
+    background-color: #337ab7;
+    border: 1px solid #fff;
+    border-bottom-color: transparent;
+}

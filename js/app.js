@@ -6,7 +6,6 @@ var app = angular.module('app', ['uiGmapgoogle-maps', 'frapontillo.bootstrap-swi
                 iconlib: 'fontawesome4',
                 theme: 'bootstrap3',
                 disable_array_delete_all_rows: true,
-                //disable_collapse: true,
                 disable_properties: true
             }
         }
@@ -122,6 +121,7 @@ app.controller('MainController', function ($rootScope, $scope, $log, $http, $fil
         };
 
         $scope.closeClick = function () {
+            //console.log("closed");
             $scope.windowOptions.visible = false;
         };
     }
@@ -142,38 +142,11 @@ app.controller('AdminController', function ($rootScope, $scope, $log, $http) {
         type: 'object',
         uniqueItems: true,
         properties: { // object properties
-            map: {  // map initial location
-                title: 'Map Initial Location',
-                type: 'object',
-                properties: {
-                    center: {
-                        title: 'Location',
-                        type: 'object',
-                        format: "grid",
-                        properties: {
-                            latitude: {
-                                type: 'number',
-                                title: 'Latitude',
-                                required: true
-                            },
-                            longitude: {
-                                type: 'number',
-                                title: 'Longitude',
-                                required: true
-                            }
-                        }
-                    },
-                    zoom: {
-                        type: 'integer',
-                        title: 'Zoom',
-                        required: true
-                    }
-                }
-            },
             markers: {
                 title: 'Markers Information',
                 type: 'array',
                 format: 'tabs',
+                options: {hidden: false},
                 "items": {
                     "title": "Marker",
                     "type": "object",
@@ -229,6 +202,7 @@ app.controller('AdminController', function ($rootScope, $scope, $log, $http) {
                 id: "marker_types_array",
                 type: 'array',
                 format: 'tabs',
+                options: {hidden: true},
                 items: {
                     title: "Service Type",
                     type: "object",
@@ -247,7 +221,37 @@ app.controller('AdminController', function ($rootScope, $scope, $log, $http) {
                         }
                     }
                 }
-            }
+            },
+            map: {  // map initial location
+                title: 'Map Initial Location',
+                type: 'object',
+                options: {hidden: true},
+                properties: {
+                    center: {
+                        title: 'Location',
+                        type: 'object',
+                        format: "grid",
+                        properties: {
+                            latitude: {
+                                type: 'number',
+                                title: 'Latitude',
+                                required: true
+                            },
+                            longitude: {
+                                type: 'number',
+                                title: 'Longitude',
+                                required: true
+                            }
+                        }
+                    },
+                    zoom: {
+                        type: 'integer',
+                        title: 'Zoom',
+                        required: true
+                    }
+                }
+            },
+
         } // end properties
     };
 
@@ -263,6 +267,23 @@ app.controller('AdminController', function ($rootScope, $scope, $log, $http) {
             //scrollwheel: false
         };
         $scope.initMap(angular.copy($rootScope.newJsonData), MAP_HEIGHT, options); // pass a copy to initMap()
+    }
+
+    // in the nav bar, switch between markers, marker types and map initial location
+    $scope.onMenuSelect = function (type) {
+        console.log("Select Tab: " + type);
+        $scope.activeTab = type;
+        var arr = new Array(true, true, true);
+        if (type >= 0 && type <= 2) {
+            arr[type] = false;
+        }
+        else {
+            arr[0] = arr[1] = arr[2] = false;
+        }
+        console.log(arr);
+        $scope.jsonSchema.properties.markers.options.hidden = arr[0];
+        $scope.jsonSchema.properties.marker_types.options.hidden = arr[1];
+        $scope.jsonSchema.properties.map.options.hidden = arr[2];
     }
 });
 

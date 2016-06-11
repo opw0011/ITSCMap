@@ -28,6 +28,13 @@
                 <small>Manage map markers data</small>
             </h1>
         </div>
+        <!--{{jsonSchema.properties.map.options}}-->
+        <ul class="nav nav-tabs" ng-init="activeTab = 0">
+            <li ng-class="{active : activeTab == 0}"><a ng-click="onMenuSelect(0)">Markers</a></li>
+            <li ng-class="{active : activeTab == 1}"><a ng-click="onMenuSelect(1)">Marker Types</a></li>
+            <li ng-class="{active : activeTab == 2}"><a ng-click="onMenuSelect(2)">Map Information</a></li>
+            <li ng-class="{active : activeTab == 3}"><a ng-click="onMenuSelect(3)">Show All</a></li>
+        </ul>
         <!-- JSON Editor-->
         <json-editor schema="jsonSchema" startval="myStartVal" show_errors="always" buttons-controller="SaveJsonBtnController"
                      on-change="onChange($editorValue)">
@@ -67,11 +74,6 @@
     <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script src="bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
     <script src="bower_components/lodash/lodash.js"></script>
-    <script src="bower_components/markerclustererplus/src/markerclusterer.js"></script>
-    <script src="bower_components/google-maps-utility-library-v3-markerwithlabel/dist/markerwithlabel.js"></script>
-    <script src="bower_components/google-maps-utility-library-v3-infobox/dist/infobox.js"></script>
-    <script src="bower_components/google-maps-utility-library-v3-keydragzoom/dist/keydragzoom.js"></script>
-    <script src="bower_components/js-rich-marker/src/richmarker.js"></script>
     <script src="bower_components/angular-google-maps/dist/angular-google-maps.js"></script>
     <script src="bower_components/bootstrap-switch/dist/js/bootstrap-switch.js"></script>
     <script src="bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"></script>
