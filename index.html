@@ -9,6 +9,7 @@
     <!-- bower:css -->
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css" />
+    <link rel="stylesheet" href="bower_components/angular-busy/dist/angular-busy.css" />
     <!-- endbower -->
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -20,7 +21,7 @@
 
     <link rel="stylesheet" href="css/main.css" />
   </head>
-  <body ng-controller="MainController">
+  <body ng-controller="MainController" cg-busy="myPromise">
     <div class="container-fluid">
       <ui-gmap-google-map center='map.center' zoom='map.zoom' options="options" id="itsc-map">
         <!--<ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id">-->
@@ -58,16 +59,13 @@
     <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script src="bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
     <script src="bower_components/lodash/lodash.js"></script>
-    <script src="bower_components/markerclustererplus/src/markerclusterer.js"></script>
-    <script src="bower_components/google-maps-utility-library-v3-markerwithlabel/dist/markerwithlabel.js"></script>
-    <script src="bower_components/google-maps-utility-library-v3-infobox/dist/infobox.js"></script>
-    <script src="bower_components/google-maps-utility-library-v3-keydragzoom/dist/keydragzoom.js"></script>
-    <script src="bower_components/js-rich-marker/src/richmarker.js"></script>
     <script src="bower_components/angular-google-maps/dist/angular-google-maps.js"></script>
     <script src="bower_components/bootstrap-switch/dist/js/bootstrap-switch.js"></script>
     <script src="bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"></script>
     <script src="bower_components/json-editor/dist/jsoneditor.js"></script>
     <script src="bower_components/angular-json-editor/src/angular-json-editor.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.js"></script>
+    <script src="bower_components/angular-busy/dist/angular-busy.js"></script>
     <!-- endbower -->
     <script src="https://use.fontawesome.com/a4456d7f85.js"></script>
     <script src="js/app.js"></script>

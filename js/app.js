@@ -1,4 +1,5 @@
-var app = angular.module('app', ['uiGmapgoogle-maps', 'frapontillo.bootstrap-switch', 'angular-json-editor']).config(function (JSONEditorProvider) {
+var app = angular.module('app', ['uiGmapgoogle-maps', 'frapontillo.bootstrap-switch', 'angular-json-editor', 'cgBusy'])
+.config(function (JSONEditorProvider) {
     // these are set by default, but we set this for demonstration purposes
     JSONEditorProvider.configure({
         defaults: {
@@ -20,7 +21,7 @@ app.controller('MainController', function ($rootScope, $scope, $log, $http, $fil
     var MAP_HEIGHT = 700;
 
     // get json data
-    $http.get("data/setting.json")
+    $scope.myPromise = $http.get("data/setting.json")
         .then(function (response) {
             console.log(response.data);
             //var marker_data = response.data.markers;
