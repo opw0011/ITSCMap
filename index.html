@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="css/main.css" />
   </head>
   <body ng-controller="MainController" cg-busy="myPromise">
-    <div class="container-fluid">
+    <div class="container-fluid" id="main-wrapper">
       <ui-gmap-google-map center='map.center' zoom='map.zoom' options="options" id="itsc-map">
         <!--<ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id">-->
             <!--<ui-gmap-window options="windowOptions" closeClick="closeClick()" templateUrl="'templates/windowContent.html'" templateParameter="windowParams">-->
@@ -39,7 +39,7 @@
       </ui-gmap-google-map>
 
       <!--{{markerOptionsArray}}-->
-      <div class="container-fluid">
+      <div class="container-fluid" id="select-marker-bar">
         <div class="checkbox-inline" ng-repeat="option in markerOptionsArray">
           <label>
             <input type="checkbox" ng-model="option.visible" > {{option.title}}

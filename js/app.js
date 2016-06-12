@@ -15,11 +15,17 @@ var app = angular.module('app', ['uiGmapgoogle-maps', 'frapontillo.bootstrap-swi
 });
 
 app.controller('MainController', function ($rootScope, $scope, $log, $http, $filter,$timeout) {
+    var MAP_HEIGHT = $(window).height() - 40;
+    console.log("Map height: " + MAP_HEIGHT);
 
-    //var image_pc = "http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/computers.png";
-    //var image_mfp = 'http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/text.png';
-    //var image_satellite = "http://itsc.ust.hk/sites/itscprod.sites.ust.hk/files/barn/text2.png";
-    var MAP_HEIGHT = 700;
+    // dynamic update map when resize
+    $(window).resize(function(){
+        $scope.$apply(function(){
+            //do something to update current scope based on the new innerWidth and let angular update the view.
+            $scope.setMapHeight($(window).height() - $("#select-marker-bar").height());
+        });
+    });
+
     $rootScope.cursorPosition = {
         latitude: 0,
         longitude: 0
@@ -145,7 +151,7 @@ app.controller('MainController', function ($rootScope, $scope, $log, $http, $fil
 
 app.controller('AdminController', function ($rootScope, $scope, $log, $http) {
 
-    var MAP_HEIGHT = 500;
+    var MAP_HEIGHT = 700;
 
     // Default loaded value for Json Editor
     $scope.myStartVal = $http.get("data/setting.json"); // load value from http
