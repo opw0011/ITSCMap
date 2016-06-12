@@ -312,11 +312,20 @@ app.controller('AdminController', function ($rootScope, $scope, $log, $http) {
 });
 
 app.controller('SaveJsonBtnController', function ($rootScope, $scope, $http, $timeout, $window) {
+    $scope.showErrorMsg = false;
+
     // save the updated data to json file by calling the php
     $scope.saveMap = function () {
         var r = confirm("Confirm save changes to the server?");
         if (r == true) {
             // TODO: ensure  json data is correct
+            var error = $scope.editor.validate()
+            if(error.length) {
+                $scope.showErrorMsg = true;
+                alert("Error! Data is not saved.");
+                return;
+            }
+
             var json = $rootScope.newJsonData
             if (json == null || json == "") {
                 alert("ERROR: No Map Data!");
