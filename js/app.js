@@ -7,7 +7,8 @@ var app = angular.module('app', ['uiGmapgoogle-maps', 'frapontillo.bootstrap-swi
                 iconlib: 'fontawesome4',
                 theme: 'bootstrap3',
                 disable_array_delete_all_rows: true,
-                disable_properties: true
+                disable_properties: true,
+                show_errors: 'always'
             }
         }
     })
@@ -171,7 +172,6 @@ app.controller('AdminController', function ($rootScope, $scope, $log, $http) {
                             type: 'number',
                             title: 'Latitude',
                             required: true,
-                            default: 0
                         },
                         longitude: {
                             type: 'number',
@@ -194,6 +194,7 @@ app.controller('AdminController', function ($rootScope, $scope, $log, $http) {
                             type: 'string',
                             title: 'Service Type',
                             required: true,
+                            default: "None",
                             //enum: [
                             //  'virtual_barn',
                             //  'mfp',
@@ -203,6 +204,9 @@ app.controller('AdminController', function ($rootScope, $scope, $log, $http) {
                                 arr: "marker_types"
                             },
                             enumSource: [
+                                {
+                                    "source": ["None"]
+                                },
                                 {
                                     "source": "arr",
                                     "title": "{{item.title}}",

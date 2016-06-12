@@ -40,6 +40,7 @@
         <json-editor schema="jsonSchema" startval="myStartVal" show_errors="always" buttons-controller="SaveJsonBtnController"
                      on-change="onChange($editorValue)">
             <!--{{editor.getValue()}}-->
+            {{editor.validate()}}
             <div class="clearfix"></div>
             <div class="alert-danger" ng-show="!isValid"><strong>ERROR: Some data are not correctly input. Please check!</strong></div>
             <button class="btn btn-success pull-right" ng-click="saveMap()" ng-disabled="!isValid">Save Changes</button>
