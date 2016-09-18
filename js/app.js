@@ -1,4 +1,4 @@
-var app = angular.module('app', ['uiGmapgoogle-maps', 'frapontillo.bootstrap-switch', 'angular-json-editor', 'cgBusy'])
+var app = angular.module('app', ['uiGmapgoogle-maps', 'frapontillo.bootstrap-switch', 'angular-json-editor', 'cgBusy', 'ngBootbox'])
 .config(function (JSONEditorProvider) {
     // these are set by default, but we set this for demonstration purposes
     JSONEditorProvider.configure({
@@ -14,7 +14,7 @@ var app = angular.module('app', ['uiGmapgoogle-maps', 'frapontillo.bootstrap-swi
     })
 });
 
-app.controller('MainController', function ($rootScope, $scope, $log, $http, $filter,$timeout) {
+app.controller('MainController', function ($rootScope, $scope, $log, $http, $filter,$timeout, $ngBootbox) {
     var MAP_HEIGHT = $(window).height() - 40;
     console.log("Map height: " + MAP_HEIGHT);
 
@@ -73,16 +73,25 @@ app.controller('MainController', function ($rootScope, $scope, $log, $http, $fil
                     $rootScope.cursorPosition = {latitude: marker.latitude, longitude: marker.longitude};
 
                 });
-                setTimeout(function() { confirmRightClickAddNewMarker(); }, 500);
+
+                $timeout(function() {
+                    // anything you want can go here and will safely be run on the next digest.
+                    confirmRightClickAddNewMarker();
+                })
+                //setTimeout(function() { confirmRightClickAddNewMarker(); }, 500);
             }
         };
 
         function confirmRightClickAddNewMarker() {
-            var r = confirm("Do you want to add a new marker using current position?");
-            if( r == true ){
-                document.getElementById("btn_new_marker").click();
-                //$("button.btn.btn-default.json-editor-btn-add").click();
-            }
+            $ngBootbox.confirm('Do you want to add a new marker using current position?')
+                .then(function() {
+                    // if confirmed
+                    $timeout(function() {
+                        document.getElementById("btn_new_marker").click();
+                    })
+                }, function() {
+                    console.log('Confirm dismissed!');
+            });
         }
 
         // map starting location
@@ -334,23 +343,22 @@ app.controller('SaveJsonBtnController', function ($rootScope, $scope, $http, $ti
 
     // save the updated data to json file by calling the php
     $scope.saveMap = function () {
-        var r = confirm("Confirm save changes to the server?");
-        if (r == true) {
-            // TODO: ensure  json data is correct
-            var error = $scope.editor.validate()
-            if(error.length) {
-                $scope.showErrorMsg = true;
-                alert("Error! Data is not saved.");
-                return;
-            }
-
-            var json = $rootScope.newJsonData
-            if (json == null || json == "") {
-                alert("ERROR: No Map Data!");
-                return;
-            }
-            updateJson(json);
+        //var r = confirm("Confirm save changes to the server?");
+        // TODO: ensure  json data is correct
+        var error = $scope.editor.validate()
+        if(error.length) {
+            $scope.showErrorMsg = true;
+            alert("Error! Data is not saved.");
+            return;
         }
+
+        var json = $rootScope.newJsonData
+        if (json == null || json == "") {
+            alert("ERROR: No Map Data!");
+            return;
+        }
+        updateJson(json);
+
     }
 
     function updateJson(json) {

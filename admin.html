@@ -44,19 +44,30 @@
             <div class="clearfix"></div>
             <!--{{showErrorMsg}}-->
             <div class="alert-danger" ng-show="(!isValid) && showErrorMsg"><strong>ERROR: Some data are not correctly input. Please check!</strong></div>
-            <button class="btn btn-success pull-right" ng-click="saveMap()">Save Changes</button>
+            <button class="btn btn-success pull-right"
+                    ng-bootbox-confirm="Confirm save changes to the server?" ng-bootbox-confirm-action="saveMap()">Save Changes</button>
             <button class="btn btn-warning" ng-click="addNewMarker()" id="btn_new_marker">Create marker using current position</button>
         </json-editor>
         <button class="btn btn-primary pull-right" ng-click="reloadMap();">Preview Changes</button>
         <div class="well well-sm"><strong>Right Click</strong> the map to locate a point [Latitude: <strong>{{cursorPosition.latitude}} </strong>, Longitude: <strong>{{cursorPosition.longitude}}</strong>]</div>
+        <!--<ui-gmap-google-map center='map.center' zoom='map.zoom' options="options" id="itsc-map" events="mapEvent">-->
+            <!--<ui-gmap-markers models="markersArray" coords="'self'" options="'options'" click="onClick">-->
+                <!--<ui-gmap-windows>-->
+                    <!--<div>-->
+                        <!--<h5>{{title}}</h5>-->
+                        <!--<img ng-src="{{image_url}}" class="img-responsive"  style="max-width: 100%; max-height:350px"/>-->
+                    <!--</div>-->
+                <!--</ui-gmap-windows>-->
+            <!--</ui-gmap-markers>-->
+        <!--</ui-gmap-google-map>-->
         <ui-gmap-google-map center='map.center' zoom='map.zoom' options="options" id="itsc-map" events="mapEvent">
+            <ui-gmap-window coords="selectedMarker.coords" show="windowOptions.visible" options="windowOptions" closeClick="closeClick()">
+                <div>
+                    <h5 id="window_title">title</h5>
+                    <img id="window_img" src="" class="img-responsive" style="max-width: 100%; max-height:350px"/>
+                </div>
+            </ui-gmap-window>
             <ui-gmap-markers models="markersArray" coords="'self'" options="'options'" click="onClick">
-                <ui-gmap-windows>
-                    <div>
-                        <h5>{{title}}</h5>
-                        <img ng-src="{{image_url}}" class="img-responsive"  style="max-width: 100%; max-height:350px"/>
-                    </div>
-                </ui-gmap-windows>
             </ui-gmap-markers>
         </ui-gmap-google-map>
         <button class="btn btn-warning" ng-click="layout.showJson = !layout.showJson">Show Json (for debug use)</button>
