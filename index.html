@@ -28,13 +28,19 @@
             <!--<ui-gmap-window options="windowOptions" closeClick="closeClick()" templateUrl="'templates/windowContent.html'" templateParameter="windowParams">-->
             <!--</ui-gmap-window>-->
         <!--</ui-gmap-marker>-->
+        <ui-gmap-window coords="selectedMarker.coords" show="windowOptions.visible" options="windowOptions" closeClick="closeClick()">
+          <div>
+            <h5 id="window_title">title</h5>
+            <img id="window_img" src="" class="img-responsive" style="max-width: 100%; max-height:350px"/>
+          </div>
+        </ui-gmap-window>
         <ui-gmap-markers models="markersArray" coords="'self'" options="'options'" click="onClick">
-          <ui-gmap-windows>
-            <div>
-              <h5>{{title}}</h5>
-              <img ng-src="{{image_url?image_url:' '}}" class="img-responsive"  style="max-width: 100%; max-height:350px"/>
-            </div>
-          </ui-gmap-windows>
+          <!--<ui-gmap-windows>-->
+            <!--<div>-->
+              <!--<h5>{{title}}</h5>-->
+              <!--<img ng-src="{{image_url?image_url:' '}}" class="img-responsive"  style="max-width: 100%; max-height:350px"/>-->
+            <!--</div>-->
+          <!--</ui-gmap-windows>-->
         </ui-gmap-markers>
       </ui-gmap-google-map>
 

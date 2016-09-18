@@ -131,22 +131,33 @@ app.controller('MainController', function ($rootScope, $scope, $log, $http, $fil
 
         // map windows
         $scope.windowOptions = {
+            pixelOffset: {height: -30, width:0},
             visible: false
         };
 
         // when marker is clicked
         $scope.onClick = function (marker, eventName, model) {
             console.log(model);
-            model.show = !model.show;   // hide marker if double click
+            $scope.$apply(function() {
+                $scope.selectedMarker = {};
+                // update windows content, note that using scope variable has bug
+                angular.element( document.querySelector('#window_title') ).text(model.title);
+                angular.element( document.querySelector('#window_img') ).attr("src", model.image_url);
+                //$scope.selectedMarker.title = model.title;
+                //$scope.selectedMarker.image_url = model.image_url;
+                $scope.selectedMarker.coords = {
+                    latitude: model.latitude,
+                    longitude: model.longitude
+                };
+                $scope.windowOptions.visible = true;
+            });
 
-            $scope.title = model.title;
-            $scope.image_url = model.image_url;
         };
 
-        //$scope.windowCloseClick = function () {
-        //    console.log("closed");
-        //    $scope.windowOptions.visible = false;
-        //};
+        $scope.closeClick = function () {
+            console.log("close")
+            this.show = false;
+        };
     }
 });
 
