@@ -137,15 +137,16 @@ app.controller('MainController', function ($rootScope, $scope, $log, $http, $fil
         // when marker is clicked
         $scope.onClick = function (marker, eventName, model) {
             console.log(model);
-            //model.window_show = !model.window_show;
+            model.show = !model.show;   // hide marker if double click
+
             $scope.title = model.title;
             $scope.image_url = model.image_url;
         };
 
-        $scope.closeClick = function () {
-            //console.log("closed");
-            $scope.windowOptions.visible = false;
-        };
+        //$scope.windowCloseClick = function () {
+        //    console.log("closed");
+        //    $scope.windowOptions.visible = false;
+        //};
     }
 });
 
