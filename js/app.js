@@ -152,7 +152,12 @@ app.controller('MainController', function ($rootScope, $scope, $log, $http, $fil
                 // update windows content, note that using scope variable has bug
                 angular.element( document.querySelector('#window_title') ).text(model.title);
                 angular.element( document.querySelector('#window_img') ).attr("src", model.image_url);
-                //$scope.selectedMarker.title = model.title;
+                // prevent firefox broken imgage
+		if(model.image_url == "")
+			angular.element( document.querySelector('#window_img')).css('visibility', 'hidden');
+		else
+			angular.element( document.querySelector('#window_img')).css('visibility', 'visible');
+		//$scope.selectedMarker.title = model.title;
                 //$scope.selectedMarker.image_url = model.image_url;
                 $scope.selectedMarker.coords = {
                     latitude: model.latitude,
