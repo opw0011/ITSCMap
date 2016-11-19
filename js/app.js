@@ -1,3 +1,19 @@
+/*
+To control the default visible services
+
+Pass different param into the url using the following format:
+http://{HOST_BASE_URL}/{FOLDER_NAME}/index.html?v={MARKER_INDEX}
+e.g. http://127.0.0.1/itsc-map/index.html?v=0
+
+For multiple markers:
+http://{HOST_BASE_URL}/{FOLDER_NAME}/index.html?v={MARKER_INDEX_1}[&v={MARKER_INDEX_N}...]
+e.g. http://127.0.0.1/itsc-map/index.html?v=0&v=1&v=3
+
+Notes:
+- MARKER_INDEX starts with 0
+- If no param is passed, it will shows all by default
+*/
+
 var app = angular.module('app', ['uiGmapgoogle-maps', 'frapontillo.bootstrap-switch', 'angular-json-editor', 'cgBusy', 'ngBootbox'])
 .config(function (JSONEditorProvider) {
     // these are set by default, but we set this for demonstration purposes
@@ -12,9 +28,15 @@ var app = angular.module('app', ['uiGmapgoogle-maps', 'frapontillo.bootstrap-swi
             }
         }
     })
-});
+})
+.config(['$locationProvider', function($locationProvider) {
+    $locationProvider.html5Mode({
+        enabled: true,
+        requireBase: false
+    });
+}]);
 
-app.controller('MainController', function ($rootScope, $scope, $log, $http, $filter,$timeout, $ngBootbox) {
+app.controller('MainController', function ($rootScope, $scope, $log, $http, $filter,$timeout, $ngBootbox, $location) {
     var MAP_HEIGHT = $(window).height() - 40;
     console.log("Map height: " + MAP_HEIGHT);
 
@@ -103,16 +125,64 @@ app.controller('MainController', function ($rootScope, $scope, $log, $http, $fil
         // markers options
         $scope.serviceTypeArray = inputJson.marker_types;
         $scope.markerOptionsArray = [];
+
+        // get the url route params
+        var param = $location.search();
+
+        // number stored in this array is the icon index set to visible
+        // e.g. [0, 3] -> set icon[0] = icon[3] = visible, others are hidden
+        var toggleVisble = [];
+        // var optVisible = false;
+
+        console.log(param);
+        if(jQuery.isEmptyObject(param)) {
+          console.log("no param is passed, all visible");
+        }
+        else{
+          // param is not empty object
+
+          if(param.v != null) {
+            if(param.v instanceof Array) {
+              // multiple param
+              param.v.forEach(function(index) {
+                toggleVisble.push(parseInt(index));
+              });
+            }
+            else {
+              // single param
+              toggleVisble.push(parseInt(param.v));
+            }
+          }
+        }
+
+        // console.log(toggleVisble);
+
         // set default option and icon for each marker type
-        inputJson.marker_types.forEach(function (markerType) {
+        inputJson.marker_types.forEach(function (markerType, index) {
+            // console.log(index);
             //console.log("Debug");
             //console.log(markerType);
             var obj = {
-                visible: true,
+                // checkbox default visibility
+                visible: false,
                 animation: google.maps.Animation.DROP,
                 icon: markerType.icon_image_url,
                 title: markerType.title
             }
+            // if no param is passed, by default show all
+            if(toggleVisble.length == 0) {
+              obj.visible = true;
+            }
+            else {
+              // toggle the icon stored in array
+              toggleVisble.forEach(function(visibleIndex) {
+                if(index == visibleIndex) {
+                  obj.visible = true;
+                  return;
+                }
+              })
+            }
+
             $scope.markerOptionsArray.push(obj);
             //console.log($scope.markerOptionsArray);
         });
