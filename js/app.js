@@ -256,7 +256,7 @@ app.controller('AdminController', function ($rootScope, $scope, $log, $http) {
 
     // Schema for Json Editor
     $scope.jsonSchema = {
-        title: "ITSC Services Markers",
+        title: "Access Map Markers",
         type: 'object',
         uniqueItems: true,
         properties: { // object properties

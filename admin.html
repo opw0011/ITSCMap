@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ITSC Services Map</title>
+    <title>Access Map</title>
 
     <!-- bower:css -->
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
@@ -50,16 +50,6 @@
         </json-editor>
         <button class="btn btn-primary pull-right" ng-click="reloadMap();">Preview Changes</button>
         <div class="well well-sm"><strong>Right Click</strong> the map to locate a point [Latitude: <strong>{{cursorPosition.latitude}} </strong>, Longitude: <strong>{{cursorPosition.longitude}}</strong>]</div>
-        <!--<ui-gmap-google-map center='map.center' zoom='map.zoom' options="options" id="itsc-map" events="mapEvent">-->
-            <!--<ui-gmap-markers models="markersArray" coords="'self'" options="'options'" click="onClick">-->
-                <!--<ui-gmap-windows>-->
-                    <!--<div>-->
-                        <!--<h5>{{title}}</h5>-->
-                        <!--<img ng-src="{{image_url}}" class="img-responsive"  style="max-width: 100%; max-height:350px"/>-->
-                    <!--</div>-->
-                <!--</ui-gmap-windows>-->
-            <!--</ui-gmap-markers>-->
-        <!--</ui-gmap-google-map>-->
         <ui-gmap-google-map center='map.center' zoom='map.zoom' options="options" id="itsc-map" events="mapEvent">
             <ui-gmap-window coords="selectedMarker.coords" show="windowOptions.visible" options="windowOptions" closeClick="closeClick()">
                 <div>
@@ -75,8 +65,8 @@
         <hr>
 
         <!-- Project Version -->
-        <div class="badge pull-right">V1.6</div>
-        <div class="label label-primary pull-left">Last Updated: 20 June 2016</div>
+        <div class="badge pull-right">V1.7</div>
+        <div class="label label-primary pull-left">Last Updated: 7 May 2017</div>
     </div>
 
 
