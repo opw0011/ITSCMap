@@ -47,11 +47,11 @@
 
       <!--{{markerOptionsArray}}-->
       <div class="container-fluid" id="select-marker-bar">
-        <div class="checkbox-inline" ng-repeat="option in markerOptionsArray">
-          <label>
-            <input type="checkbox" ng-model="option.visible" > {{option.title}}
-          </label>
-          <img ng-src="{{option.icon}}" ng-click="option.visible = !option.visible" style="height:40px">
+        <div ng-repeat="option in markerOptionsArray" style="display:inline-block; padding-right: 20px">
+          <img ng-src="{{option.icon}}" ng-click="option.visible = !option.visible" style="height:40px">   
+          <label class="checkbox-inline">
+            <input type="checkbox" ng-model="option.visible"> {{option.title}}
+          </label>       
         </div>
       </div>
 
