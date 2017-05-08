@@ -1,34 +1,37 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: opw
- * Date: 12/5/2016
- * Time: 1:52
- */
 
-$file = 'data/setting.json';
-//$jsonString = file_get_contents($file);
-//echo $jsonString;
-// read post json
-$inputJsonString= file_get_contents('php://input');
+// Load the CAS lib
+require_once '../cas/CAS-1.2.2/CAS.php';
 
-if (isJson($inputJsonString) && $inputJsonString != "" ) {
-    // put the json to setting.json
-    file_put_contents($file, $inputJsonString);
-    header("HTTP/ 200 OK");
-    echo "Success update json!";
-}
-else {
-    echo "ERROR: Not a valid json file";
-    header("HTTP/ 400 ERROR");
-}
+// Uncomment to enable debugging
+phpCAS::setDebug();
 
-// check if the string is in valid json format
-function isJson($string) {
-    $valid = json_decode($string);
-    //return (json_last_error() == JSON_ERROR_NONE);
-	//for php >=5.2 && <5.3.0
-	return $valid;
+// Initialize phpCAS
+phpCAS::client(CAS_VERSION_2_0,'cas.ust.hk',443,'cas');
+
+// For production use set the CA certificate that is the issuer of the cert
+// on the CAS server and uncomment the line below
+// phpCAS::setCasServerCACert($cas_server_ca_cert_path);
+
+// For quick testing you can disable SSL validation of the CAS server.
+// THIS SETTING IS NOT RECOMMENDED FOR PRODUCTION.
+// VALIDATING THE CAS SERVER IS CRUCIAL TO THE SECURITY OF THE CAS PROTOCOL!
+phpCAS::setNoCasServerValidation();
+
+// force CAS authentication
+phpCAS::forceAuthentication();
+
+// at this step, the user has been authenticated by the CAS server
+// and the user's login name can be read with phpCAS::getUser().
+
+// logout if desired
+if (isset($_REQUEST['logout'])) {
+	phpCAS::logout();
 }
 
+// for this test, simply print that the authentication was successfull
 ?>
+Welcome <?php echo phpCAS::getUser();?>
+
+<p><button onclick="window.location.assign('admin.php?logout=')">Logout</button></p>
+<?php include("admin.html"); ?>

@@ -439,7 +439,7 @@ app.controller('SaveJsonBtnController', function ($rootScope, $scope, $http, $ti
     function updateJson(json) {
         console.log((json));
         $http({
-            url: "Admin.php",
+            url: "updateJson.php",
             method: "POST",
             data: json,
             headers: {'Content-Type': 'application/json;charset=utf-8'}
