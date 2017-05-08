@@ -9,11 +9,10 @@
 $file = 'data/setting.json';
 //$jsonString = file_get_contents($file);
 //echo $jsonString;
-
 // read post json
 $inputJsonString= file_get_contents('php://input');
 
-if (isJson($inputJsonString) && !$inputJsonString == "" ) {
+if (isJson($inputJsonString) && $inputJsonString != "" ) {
     // put the json to setting.json
     file_put_contents($file, $inputJsonString);
     header("HTTP/ 200 OK");
@@ -26,7 +25,10 @@ else {
 
 // check if the string is in valid json format
 function isJson($string) {
-    json_decode($string);
-    return (json_last_error() == JSON_ERROR_NONE);
+    $valid = json_decode($string);
+    //return (json_last_error() == JSON_ERROR_NONE);
+	//for php >=5.2 && <5.3.0
+	return $valid;
 }
 
+?>
